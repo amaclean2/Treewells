@@ -1,0 +1,10 @@
+/coverage
+/node_modules
+/.vscode
+/.gitignore
+/.eslintrc.js
+/babel.config.js
+/jest.config.js
+/rollup.config.mjs
+/tsconfig.json
+/.github
