@@ -1,11 +1,14 @@
 {
-	"name": "sundaypeak-treewells",
+	"name": "@amaclean2/sundaypeak-treewells",
 	"version": "0.0.1",
 	"description": "A react hooks library for SundayPeak",
 	"main": "dist/cjs/index.js",
 	"repository": {
 		"type": "git",
-		"url": "git@github.com:amaclean2/BackyardFriends.git"
+		"url": "git@github.com:amaclean2/Treewells.git"
+	},
+	"publishConfig": {
+		"@amaclean2:registry": "https://npm.pkg.github.com"
 	},
 	"module": "dist/esm/index.js",
 	"files": [
