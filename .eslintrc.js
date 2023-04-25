@@ -3,6 +3,7 @@ module.exports = {
 		browser: true,
 		es2021: true
 	},
+	ignorePatterns: ['*.test.*'],
 	extends: ['plugin:react/recommended', 'standard-with-typescript', 'plugin:prettier/recommended'],
 	overrides: [],
 	parserOptions: {
