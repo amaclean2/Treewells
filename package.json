@@ -24,8 +24,8 @@
 	"author": "Andrew Maclean",
 	"license": "ISC",
 	"peerDependencies": {
-		"react": "file:../BackyardFriends/mountains/node_modules/react",
-		"react-router-dom": "^6.9.0"
+		"react-router-dom": "^6.9.0",
+		"react": "^18.2.0"
 	},
 	"devDependencies": {
 		"@babel/core": "^7.21.3",
@@ -56,8 +56,8 @@
 		"jest-environment-jsdom": "^29.5.0",
 		"jest-fetch-mock": "^3.0.3",
 		"jest-when": "^3.5.2",
-		"react": "file:../BackyardFriends/mountains/node_modules/react",
-		"react-dom": "file:../BackyardFriends/mountains/node_modules/react-dom",
+		"react": "^18.2.0",
+		"react-dom": "^18.2.0",
 		"react-router-dom": "^6.9.0",
 		"rollup": "^3.19.1",
 		"rollup-plugin-dts": "^5.2.0",
