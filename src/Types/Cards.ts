@@ -10,7 +10,7 @@ type CloseMessage = {
 
 type SetGalleryImage = {
 	type: 'setGalleryImage'
-	payload: URLType
+	payload: number
 }
 
 type OpenAlert = {
@@ -22,12 +22,21 @@ type CloseAlert = {
 	type: 'closeAlert'
 }
 
-export type CardAction = CloseMessage | SetGalleryImage | OpenAlert | CloseAlert
+type SetImageList = {
+	type: 'setImageList'
+	payload: {
+		list: URLType[]
+		index: number
+	}
+}
+
+export type CardAction = CloseMessage | SetGalleryImage | OpenAlert | CloseAlert | SetImageList
 
 export type CardState = {
-	galleryImage: URLType | null
+	galleryImage: number | null
 	showAlert: boolean
 	alertContent: string
+	imageList: URLType[] | null
 	screenType: {
 		mobile: boolean
 		tablet: boolean

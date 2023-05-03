@@ -23,11 +23,14 @@ export default [
 				sourcemap: true
 			}
 		],
+		watch: {
+			exclude: ['/__mocks__/', '/__tests__/']
+		},
 		plugins: [
 			resolve(),
 			commonjs(),
 			PeerDepsExternalPlugin(),
-			typescript({ tsconfig: './tsconfig.json', sourceMap: false }),
+			typescript({ tsconfig: './tsconfig.json', sourceMap: true }),
 			terser()
 		],
 		external: ['react', 'react-dom']

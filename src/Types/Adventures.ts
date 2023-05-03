@@ -1,4 +1,5 @@
 import type { Dispatch } from 'react'
+import type { URLType } from './Cards'
 
 export type AdventureChoiceType = 'ski' | 'climb' | 'hike'
 
@@ -169,6 +170,16 @@ type NewAdventureProcess = {
 	payload: AdventureChoiceType
 }
 
+type UpdateAdventureImages = {
+	type: 'updateAdventureImages'
+	payload: URLType
+}
+
+type DeleteAdventureImageType = {
+	type: 'deleteAdventureImage'
+	payload: URLType
+}
+
 export type AdventureAction =
 	| SetAllAdventuresType
 	| SetNewAdventureView
@@ -184,6 +195,8 @@ export type AdventureAction =
 	| NewAdventureProcess
 	| UpdateStartPosition
 	| SetInitialValues
+	| UpdateAdventureImages
+	| DeleteAdventureImageType
 
 export type AdventureState = {
 	allAdventures: AdventureList | null

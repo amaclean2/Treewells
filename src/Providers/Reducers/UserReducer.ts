@@ -1,4 +1,5 @@
 import { Storage } from '../../config'
+import type { URLType } from '../../Types/Cards'
 import type { UserAction, UserState, UserType } from '../../Types/User'
 
 export const initialUserState: UserState = {
@@ -8,8 +9,7 @@ export const initialUserState: UserState = {
 	formFields: {},
 	userEditState: false,
 	statView: 'completed', // the toggle between friends and stats view
-	searchList: null,
-	images: []
+	searchList: null
 }
 
 export const userReducer = (state: UserState, action: UserAction): UserState => {
@@ -39,6 +39,44 @@ export const userReducer = (state: UserState, action: UserAction): UserState => 
 				workingUser: action.payload,
 				userError: null,
 				formFields: {}
+			}
+		case 'updateImages':
+			return {
+				...state,
+				loggedInUser: {
+					...(state.loggedInUser as UserType),
+					images: [...(state.loggedInUser?.images as URLType[]), action.payload]
+				},
+				workingUser: state.loggedInUser as UserType
+			}
+		case 'deleteImage':
+			return {
+				...state,
+				loggedInUser: {
+					...(state.loggedInUser as UserType),
+					images: (state.loggedInUser?.images as URLType[])?.filter(
+						(image) => image !== action.payload
+					)
+				},
+				workingUser: state.loggedInUser as UserType
+			}
+		case 'deleteProfileImage':
+			return {
+				...state,
+				loggedInUser: {
+					...(state.loggedInUser as UserType),
+					profile_picture_url: '' as URLType
+				},
+				workingUser: state.loggedInUser as UserType
+			}
+		case 'updateProfileImage':
+			return {
+				...state,
+				loggedInUser: {
+					...(state.loggedInUser as UserType),
+					profile_picture_url: action.payload
+				},
+				workingUser: state.loggedInUser as UserType
 			}
 		case 'logout':
 			Storage.clear()

@@ -4,17 +4,19 @@ import type { MapPosition } from '../../Types/Adventures'
 import { type URLType } from '../../Types/Cards'
 
 export const useManipulateFlows = (): {
-	openImage: (image: string) => void
+	switchImage: (index: number) => void
 	openAlert: (alert: string) => void
 	closeAlert: () => void
 	closeCard: (message: string) => void
 	updateStartPosition: (startPosition: MapPosition) => void
+	setImageList: (imageList: URLType[], index: number) => void
+	closeImageList: () => void
 } => {
 	const { cardDispatch } = useCardStateContext()
 	const { adventureDispatch } = useAdventureStateContext()
 
-	const openImage = (image: string): void => {
-		cardDispatch({ type: 'setGalleryImage', payload: image as URLType })
+	const switchImage = (index: number): void => {
+		cardDispatch({ type: 'setGalleryImage', payload: index })
 	}
 
 	const openAlert = (alert: string): void => {
@@ -33,11 +35,21 @@ export const useManipulateFlows = (): {
 		adventureDispatch({ type: 'updateStartPosition', payload: startPosition })
 	}
 
+	const setImageList = (imageList: URLType[], index: number): void => {
+		cardDispatch({ type: 'setImageList', payload: { list: imageList, index } })
+	}
+
+	const closeImageList = (): void => {
+		cardDispatch({ type: 'setImageList', payload: { list: [], index: 0 } })
+	}
+
 	return {
-		openImage,
+		switchImage,
 		openAlert,
 		closeAlert,
 		closeCard,
-		updateStartPosition
+		updateStartPosition,
+		setImageList,
+		closeImageList
 	}
 }

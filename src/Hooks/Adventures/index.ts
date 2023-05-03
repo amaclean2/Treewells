@@ -132,6 +132,7 @@ export const useSaveAdventure = (): {
 	}: {
 		adventuresObject: AdventureType[]
 	}) => Promise<void>
+	setAdventureError: (adventureError: string) => void
 } => {
 	const { adventureDispatch, currentAdventure, globalAdventureType } = useAdventureStateContext()
 
@@ -223,10 +224,15 @@ export const useSaveAdventure = (): {
 		}
 	}
 
+	const setAdventureError = (adventureError: string): void => {
+		adventureDispatch({ type: 'setAdventureError', payload: adventureError })
+	}
+
 	return {
 		editAdventure,
 		createNewDefaultAdventure,
-		insertBulkAdventures
+		insertBulkAdventures,
+		setAdventureError
 	}
 }
 
@@ -278,12 +284,4 @@ export const useDeleteAdventure = (): {
 	}
 
 	return { deleteAdventure, toggleDeletePage }
-}
-
-export const useSubmitAdventurePicture = (): { submitAdventurePicture: () => void } => {
-	const submitAdventurePicture = (): void => {}
-
-	return {
-		submitAdventurePicture
-	}
 }

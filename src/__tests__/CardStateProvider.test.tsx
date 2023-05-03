@@ -18,9 +18,7 @@ describe('testing the card state provider', () => {
 		const setGalleryButton = screen.getByText(/Set Gallery Image/i)
 		fireEvent.click(setGalleryButton)
 
-		expect(screen.getByText(/Gallery image link/i).textContent).toBe(
-			'Gallery image link: https://newImage.com'
-		)
+		expect(screen.getByText(/Gallery image link/i).textContent).toBe('Gallery image link: 0')
 	})
 
 	test('Open alert sets the alert state and an alert', async () => {

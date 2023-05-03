@@ -14,7 +14,7 @@ const CardTestConsumer = (): JSX.Element => {
 	const setGalleryImage = (): void => {
 		cardDispatch({
 			type: 'setGalleryImage',
-			payload: 'https://newImage.com'
+			payload: 0
 		})
 	}
 
