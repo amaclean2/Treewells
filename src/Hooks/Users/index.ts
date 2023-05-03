@@ -171,8 +171,9 @@ export const useGetUser = (): {
 
 				handleLoginUserResponse(data)
 			} catch (error: any) {
-				if (error.message !== undefined) {
-					userDispatch({ type: 'setUserError', payload: error.message })
+				const { error: errorBody } = error
+				if (errorBody?.message !== undefined) {
+					userDispatch({ type: 'setUserError', payload: errorBody.message })
 				}
 				throw new Error(error)
 			}

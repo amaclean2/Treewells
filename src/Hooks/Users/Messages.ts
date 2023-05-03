@@ -1,5 +1,6 @@
 import { Connections, Storage } from '../../config'
 import { useMessagingStateContext } from '../../Providers/MessageStateProvider'
+import { useUserStateContext } from '../../Providers/UserStateProvider'
 
 export const useMessages = (): {
 	initiateConnection: () => void
@@ -14,7 +15,8 @@ export const useMessages = (): {
 	}) => void
 	closeConnection: () => void
 } => {
-	const { messageDispatch, websocket } = useMessagingStateContext()
+	const { messageDispatch, websocket, conversations } = useMessagingStateContext()
+	const { loggedInUser } = useUserStateContext()
 
 	const initiateConnection = (): void => {
 		if (websocket !== null) {
@@ -53,8 +55,48 @@ export const useMessages = (): {
 		messageDispatch({ type: 'initiateConnection', payload: localWebSocket })
 	}
 
+	const checkIfConversationExists = (userIds: number[]): false | number => {
+		if (conversations === null) {
+			return false
+		}
+
+		// sort the userIds and turn the list into a string
+		const userIdString = userIds.sort((a, b) => a - b).join(',')
+
+		let matchingConversation: number = -1
+
+		// sort the userIds of each conversation and turn them into a string
+		const conversationIdMap = Object.values(conversations).map((conversation) => ({
+			id: conversation.conversation_id,
+			users: conversation.users
+				.map((user) => user.user_id)
+				.sort((a, b) => a - b)
+				.join(',')
+		}))
+
+		// see if any of the userIds in the conversations match the one provided
+		const conversationMatch = conversationIdMap.some((conversation) => {
+			const isMatch = userIdString === conversation.users
+
+			if (isMatch) {
+				matchingConversation = conversation.id
+				return true
+			}
+
+			return false
+		})
+
+		return conversationMatch ? matchingConversation : false
+	}
+
 	const addConversation = ({ userId, name }: { userId: number; name: string }): void => {
-		websocket?.send(JSON.stringify({ type: 'createNewConversation', userIds: [userId], name }))
+		const conversationExists = checkIfConversationExists([userId, loggedInUser?.id as number])
+
+		if (conversationExists === false) {
+			websocket?.send(JSON.stringify({ type: 'createNewConversation', userIds: [userId], name }))
+		} else {
+			messageDispatch({ type: 'setCurrentConversation', payload: conversationExists })
+		}
 	}
 
 	const sendMessage = ({
