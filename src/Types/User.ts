@@ -1,5 +1,6 @@
 import type { Dispatch } from 'react'
 import type { AdventureChoiceType } from './Adventures'
+import type { URLType } from './Cards'
 
 export type CompletedAdventureForUserType = {
 	adventure_id: number
@@ -36,11 +37,18 @@ export type UserType = {
 	completed_adventures: CompletedAdventureForUserType[]
 	todo_adventures: TodoAdventureForUserType[]
 	friends: FriendType[]
+	images: URLType[]
+	profile_picture_url: URLType
 }
 
 type UserErrorType = {
 	type: 'setUserError'
 	payload: string
+}
+
+type UpdateImagesType = {
+	type: 'updateImages'
+	payload: URLType
 }
 
 type SetWorkingUserType = {
@@ -63,6 +71,11 @@ type LoginUserType = {
 
 type LogoutType = {
 	type: 'logout'
+}
+
+type UpdateProfileImageType = {
+	type: 'updateProfileImage'
+	payload: URLType
 }
 
 export type FormFieldNameOptions =
@@ -98,6 +111,15 @@ type ChangeStatType = {
 	payload: UserStatType
 }
 
+type DeleteImageType = {
+	type: 'deleteImage'
+	payload: URLType
+}
+
+type DeleteProfileImageType = {
+	type: 'deleteProfileImage'
+}
+
 export type UserAction =
 	| UserErrorType
 	| SetWorkingUserType
@@ -108,6 +130,10 @@ export type UserAction =
 	| ClearFormType
 	| IsUserEditableType
 	| ChangeStatType
+	| UpdateImagesType
+	| UpdateProfileImageType
+	| DeleteImageType
+	| DeleteProfileImageType
 
 export type UserState = {
 	userError: null | string
@@ -117,7 +143,6 @@ export type UserState = {
 	userEditState: boolean
 	statView: string
 	searchList: null
-	images: string[]
 }
 
 export type UserContext = UserState & { userDispatch: Dispatch<UserAction> }

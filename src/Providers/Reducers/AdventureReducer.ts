@@ -1,5 +1,6 @@
 import { Storage } from '../../config'
 import type { AdventureAction, AdventureState, AdventureType } from '../../Types/Adventures'
+import type { URLType } from '../../Types/Cards'
 
 export const initialAdventureState = {
 	allAdventures: null,
@@ -81,6 +82,24 @@ export const adventureReducer = (
 		case 'setGlobalAdventureType':
 			Storage.setItem('globalAdventureType', action.payload)
 			return { ...state, globalAdventureType: action.payload }
+		case 'updateAdventureImages':
+			return {
+				...state,
+				currentAdventure: {
+					...(state.currentAdventure as AdventureType),
+					images: [...(state.currentAdventure?.images as URLType[]), action.payload]
+				}
+			}
+		case 'deleteAdventureImage':
+			return {
+				...state,
+				currentAdventure: {
+					...(state.currentAdventure as AdventureType),
+					images: (state.currentAdventure?.images as URLType[])?.filter(
+						(image) => image !== action.payload
+					)
+				}
+			}
 		default:
 			return state
 	}

@@ -39,6 +39,13 @@ type CompletedAdventureObject = {
 	create: ApiObject
 }
 
+type PicturesObject = {
+	upload: ApiObject
+	delete: ApiObject
+	deleteProfilePicture: ApiObject
+	changeProfilePicture: ApiObject
+}
+
 export const users: UserObject = {
 	create: {
 		url: '/users/create',
@@ -138,5 +145,24 @@ export const completedAdventures: CompletedAdventureObject = {
 	create: {
 		url: '/completed_adventures/create',
 		method: 'POST'
+	}
+}
+
+export const pictures: PicturesObject = {
+	upload: {
+		url: '/pictures/upload',
+		method: 'POST'
+	},
+	delete: {
+		url: '/pictures/delete',
+		method: 'PUT'
+	},
+	changeProfilePicture: {
+		url: '/pictures/changeProfilePicture',
+		method: 'PUT'
+	},
+	deleteProfilePicture: {
+		url: '/pictures/deleteProfilePicture',
+		method: 'PUT'
 	}
 }

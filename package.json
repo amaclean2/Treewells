@@ -1,6 +1,6 @@
 {
 	"name": "@amaclean2/sundaypeak-treewells",
-	"version": "0.0.8",
+	"version": "0.0.10",
 	"description": "A react hooks library for SundayPeak",
 	"main": "dist/cjs/index.js",
 	"repository": {
@@ -17,13 +17,14 @@
 	"types": "dist/index.d.ts",
 	"scripts": {
 		"build": "rm -fR dist && npm run test && rollup -c",
+		"build:dev": "rm -fR dist && GENERATE_SOURCEMAP=false NODE_ENV=development rollup -c -w",
 		"lint": "eslint src/*",
 		"test": "npm run lint && jest"
 	},
 	"author": "Andrew Maclean",
 	"license": "ISC",
 	"peerDependencies": {
-		"react": "^18.2.0",
+		"react": "file:../BackyardFriends/mountains/node_modules/react",
 		"react-router-dom": "^6.9.0"
 	},
 	"devDependencies": {
@@ -55,8 +56,8 @@
 		"jest-environment-jsdom": "^29.5.0",
 		"jest-fetch-mock": "^3.0.3",
 		"jest-when": "^3.5.2",
-		"react": "^18.2.0",
-		"react-dom": "^18.2.0",
+		"react": "file:../BackyardFriends/mountains/node_modules/react",
+		"react-dom": "file:../BackyardFriends/mountains/node_modules/react-dom",
 		"react-router-dom": "^6.9.0",
 		"rollup": "^3.19.1",
 		"rollup-plugin-dts": "^5.2.0",

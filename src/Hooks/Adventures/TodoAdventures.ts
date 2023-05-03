@@ -17,8 +17,7 @@ export const useSaveTodo = (): {
 	const { adventureDispatch } = useAdventureStateContext()
 
 	const saveTodo = async ({
-		adventureId,
-		adventureType
+		adventureId
 	}: {
 		adventureId: number
 		adventureType: AdventureChoiceType

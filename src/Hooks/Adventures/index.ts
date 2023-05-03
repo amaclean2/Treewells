@@ -279,11 +279,3 @@ export const useDeleteAdventure = (): {
 
 	return { deleteAdventure, toggleDeletePage }
 }
-
-export const useSubmitAdventurePicture = (): { submitAdventurePicture: () => void } => {
-	const submitAdventurePicture = (): void => {}
-
-	return {
-		submitAdventurePicture
-	}
-}

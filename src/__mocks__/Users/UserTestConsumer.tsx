@@ -1,6 +1,7 @@
 import React, { useState } from 'react'
 import { useUserStateContext } from '../../Providers/UserStateProvider'
-import { type EventChoiceTypes } from '../../Hooks/Users'
+import type { EventChoiceTypes } from '../../Hooks/Users'
+import type { URLType } from '../../Types/Cards'
 
 const UserTestConsumer = (): JSX.Element | null => {
 	const [isFormField, setIsFormField] = useState(true)
@@ -17,7 +18,9 @@ const UserTestConsumer = (): JSX.Element | null => {
 				email: 'yvonne@email.com',
 				completed_adventures: [],
 				todo_adventures: [],
-				friends: []
+				friends: [],
+				images: [],
+				profile_picture_url: '' as URLType
 			}
 		})
 	}
@@ -32,7 +35,9 @@ const UserTestConsumer = (): JSX.Element | null => {
 				email: 'doug@thenorthface.com',
 				completed_adventures: [],
 				todo_adventures: [],
-				friends: []
+				friends: [],
+				images: [],
+				profile_picture_url: '' as URLType
 			}
 		})
 	}
