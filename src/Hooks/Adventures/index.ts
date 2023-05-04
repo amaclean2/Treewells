@@ -262,17 +262,17 @@ export const useDeleteAdventure = (): {
 		adventureName: string
 	}): Promise<void> => {
 		try {
-			await fetcher(
-				`${adventures.deleteAdventure.url}?adventure_id=${adventureId}&adventure_type=${adventureType}`,
-				{ method: adventures.deleteAdventure.method }
-			)
-
-			await getAllAdventures({ type: globalAdventureType as AdventureChoiceType })
 			adventureDispatch({ type: 'deleteAdventure' })
 			cardDispatch({
 				type: 'openAlert',
 				payload: `${adventureName} has been deleted.`
 			})
+
+			await fetcher(
+				`${adventures.deleteAdventure.url}?adventure_id=${adventureId}&adventure_type=${adventureType}`,
+				{ method: adventures.deleteAdventure.method }
+			)
+			await getAllAdventures({ type: globalAdventureType as AdventureChoiceType })
 		} catch (error) {
 			adventureDispatch({ type: 'setAdventureError', payload: 'could not delete adventure' })
 			throw error

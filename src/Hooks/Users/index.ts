@@ -43,12 +43,13 @@ export const useCreateUser = (): {
 
 					handleCreateUserResponse(data)
 				} catch (error: any) {
-					if (error?.message !== undefined) {
-						userDispatch({ type: 'setUserError', payload: error.message })
-						throw new Error(error.message)
-					} else if (error?.code_error !== undefined) {
-						userDispatch({ type: 'setUserError', payload: error.code_error })
-						throw new Error(error.error_code)
+					const { error: errorBody } = error
+					if (errorBody?.message !== undefined) {
+						userDispatch({ type: 'setUserError', payload: errorBody.message })
+						throw new Error(errorBody.message)
+					} else if (errorBody?.code_error !== undefined) {
+						userDispatch({ type: 'setUserError', payload: errorBody.code_error })
+						throw new Error(errorBody.error_code)
 					} else {
 						throw new Error(error)
 					}
