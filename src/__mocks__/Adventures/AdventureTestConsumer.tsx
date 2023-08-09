@@ -120,7 +120,8 @@ const AdventureTestConsumer = (): JSX.Element => {
 
 	const enableDoubleClick = (): void => {
 		adventureDispatch({
-			type: 'enableMapDoubleClick'
+			type: 'startNewAdventureProcess',
+			payload: 'ski'
 		})
 	}
 

@@ -1,6 +1,8 @@
+import * as turf from '@turf/turf'
+
 import { useAdventureStateContext } from '../../Providers/AdventureStateProvider'
 import { useCardStateContext } from '../../Providers/CardStateProvider'
-import type { AdventureChoiceType, AdventureType } from '../../Types/Adventures'
+import type { AdventureChoiceType, AdventureType, PathCoordinates } from '../../Types/Adventures'
 import { fetcher, useDebounce } from '../../utils'
 import { adventures } from '../Apis'
 import type { EventChoiceTypes } from '../Users'
@@ -10,6 +12,7 @@ export const useGetAdventures = (): {
 	getAllAdventures: ({ type }: { type: AdventureChoiceType }) => Promise<void>
 	searchAdventures: ({ searchQuery }: { searchQuery: string }) => Promise<any>
 	changeAdventureType: ({ type }: { type: AdventureChoiceType }) => void
+	enableNewAdventureClick: ({ type }: { type: AdventureChoiceType }) => void
 	processCsvAdventures: ({ csvString }: { csvString: string }) => Promise<AdventureType[]>
 } => {
 	const { globalAdventureType, adventureDispatch } = useAdventureStateContext()
@@ -32,6 +35,10 @@ export const useGetAdventures = (): {
 			})
 
 			adventureDispatch({ type: 'setCurrentAdventure', payload: adventure })
+
+			if (adventure.path !== undefined) {
+				adventureDispatch({ type: 'setTrailPath', payload: adventure.path })
+			}
 		} catch (error) {
 			adventureDispatch({
 				type: 'setAdventureError',
@@ -54,9 +61,13 @@ export const useGetAdventures = (): {
 	// }
 
 	const changeAdventureType = ({ type }: { type: AdventureChoiceType }): void => {
-		adventureDispatch({ type: 'startNewAdventureProcess', payload: type })
+		adventureDispatch({ type: 'setGlobalAdventureType', payload: type })
 		// I'm replacing getAllAdventures here with a watcher in adventureStateContext
 		// that calls getAllAdventures anytime the globalAdventureState changes
+	}
+
+	const enableNewAdventureClick = ({ type }: { type: AdventureChoiceType }): void => {
+		adventureDispatch({ type: 'startNewAdventureProcess', payload: type })
 	}
 
 	const getAllAdventures = async ({ type }: { type: AdventureChoiceType }): Promise<void> => {
@@ -114,7 +125,8 @@ export const useGetAdventures = (): {
 		getAllAdventures,
 		searchAdventures,
 		changeAdventureType,
-		processCsvAdventures
+		processCsvAdventures,
+		enableNewAdventureClick
 	}
 }
 
@@ -133,8 +145,13 @@ export const useSaveAdventure = (): {
 		adventuresObject: AdventureType[]
 	}) => Promise<void>
 	setAdventureError: (adventureError: string) => void
+	togglePathEdit: () => void
+	savePath: () => void
+	updatePath: (point: PathCoordinates) => void
+	deletePath: () => void
 } => {
-	const { adventureDispatch, currentAdventure, globalAdventureType } = useAdventureStateContext()
+	const { adventureDispatch, currentAdventure, globalAdventureType, workingPath } =
+		useAdventureStateContext()
 
 	const saveEditAdventure = useDebounce(
 		({ name, value }: { name: string; value: string | number }): void => {
@@ -158,6 +175,7 @@ export const useSaveAdventure = (): {
 	)
 
 	const editAdventure = (event: EventChoiceTypes): void => {
+		// event is the adventure value
 		saveEditAdventure({ name: event.target.name, value: event.target.value })
 		adventureDispatch({
 			type: 'editAdventure',
@@ -168,6 +186,37 @@ export const useSaveAdventure = (): {
 		})
 	}
 
+	const savePath = (): void => {
+		saveEditAdventure({ name: 'path', value: workingPath })
+		saveEditAdventure({ name: 'distance', value: currentAdventure?.distance })
+		togglePathEdit()
+	}
+
+	const deletePath = (): void => {
+		saveEditAdventure({ name: 'path', value: [] })
+		togglePathEdit()
+	}
+
+	const updatePath = (point: PathCoordinates): void => {
+		adventureDispatch({ type: 'updateTrailPath', payload: point })
+
+		if (workingPath.length > 1) {
+			const turfLine = turf.lineString(workingPath)
+			const lineLength = Math.round(turf.length(turfLine) * 100) / 100
+
+			adventureDispatch({
+				type: 'editAdventure',
+				payload: { name: 'distance', value: lineLength.toString() }
+			})
+		} else {
+			adventureDispatch({ type: 'editAdventure', payload: { name: 'distance', value: '0' } })
+		}
+	}
+
+	const togglePathEdit = (): void => {
+		adventureDispatch({ type: 'togglePathEdit' })
+	}
+
 	const createNewDefaultAdventure = async ({
 		longitude,
 		latitude
@@ -175,15 +224,19 @@ export const useSaveAdventure = (): {
 		longitude: number
 		latitude: number
 	}): Promise<AdventureType> => {
-		const newDefaultAdventure = {
+		const newDefaultAdventure: AdventureType = {
 			adventure_name: 'New Adventure',
-			adventure_type: globalAdventureType,
+			adventure_type: globalAdventureType as AdventureChoiceType,
 			public: true,
 			nearest_city: 'New City',
 			coordinates: {
 				lng: longitude,
 				lat: latitude
 			}
+		}
+
+		if (globalAdventureType !== null && ['ski', 'hike', 'bike'].includes(globalAdventureType)) {
+			newDefaultAdventure.difficulty = 1
 		}
 
 		try {
@@ -232,7 +285,11 @@ export const useSaveAdventure = (): {
 		editAdventure,
 		createNewDefaultAdventure,
 		insertBulkAdventures,
-		setAdventureError
+		setAdventureError,
+		togglePathEdit,
+		savePath,
+		deletePath,
+		updatePath
 	}
 }
 
@@ -262,17 +319,17 @@ export const useDeleteAdventure = (): {
 		adventureName: string
 	}): Promise<void> => {
 		try {
-			await fetcher(
-				`${adventures.deleteAdventure.url}?adventure_id=${adventureId}&adventure_type=${adventureType}`,
-				{ method: adventures.deleteAdventure.method }
-			)
-
-			await getAllAdventures({ type: globalAdventureType as AdventureChoiceType })
 			adventureDispatch({ type: 'deleteAdventure' })
 			cardDispatch({
 				type: 'openAlert',
 				payload: `${adventureName} has been deleted.`
 			})
+
+			await fetcher(
+				`${adventures.deleteAdventure.url}?adventure_id=${adventureId}&adventure_type=${adventureType}`,
+				{ method: adventures.deleteAdventure.method }
+			)
+			await getAllAdventures({ type: globalAdventureType as AdventureChoiceType })
 		} catch (error) {
 			adventureDispatch({ type: 'setAdventureError', payload: 'could not delete adventure' })
 			throw error

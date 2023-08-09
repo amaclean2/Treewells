@@ -11,6 +11,7 @@ export const useManipulateFlows = (): {
 	updateStartPosition: (startPosition: MapPosition) => void
 	setImageList: (imageList: URLType[], index: number) => void
 	closeImageList: () => void
+	closeAdventureView: () => void
 } => {
 	const { cardDispatch } = useCardStateContext()
 	const { adventureDispatch } = useAdventureStateContext()
@@ -43,6 +44,10 @@ export const useManipulateFlows = (): {
 		cardDispatch({ type: 'setImageList', payload: { list: [], index: 0 } })
 	}
 
+	const closeAdventureView = (): void => {
+		adventureDispatch({ type: 'closeAdventureView' })
+	}
+
 	return {
 		switchImage,
 		openAlert,
@@ -50,6 +55,7 @@ export const useManipulateFlows = (): {
 		closeCard,
 		updateStartPosition,
 		setImageList,
-		closeImageList
+		closeImageList,
+		closeAdventureView
 	}
 }

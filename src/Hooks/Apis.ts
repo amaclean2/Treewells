@@ -48,7 +48,7 @@ type PicturesObject = {
 
 export const users: UserObject = {
 	create: {
-		url: '/users/create',
+		url: '/users',
 		method: 'POST'
 	},
 	login: {
@@ -64,7 +64,7 @@ export const users: UserObject = {
 		method: 'GET'
 	},
 	edit: {
-		url: '/users/edit',
+		url: '/users',
 		method: 'PUT'
 	},
 	searchForUser: {
@@ -88,7 +88,7 @@ export const users: UserObject = {
 		method: 'POST'
 	},
 	delete: {
-		url: '/users/delete',
+		url: '/users',
 		method: 'DELETE'
 	}
 }
@@ -102,7 +102,7 @@ export const tokens: TokenObject = {
 
 export const adventures: AdventureObject = {
 	create: {
-		url: '/adventures/create',
+		url: '/adventures',
 		method: 'POST'
 	},
 	getAllAdventures: {
@@ -118,7 +118,7 @@ export const adventures: AdventureObject = {
 		method: 'GET'
 	},
 	editAdventure: {
-		url: '/adventures/edit',
+		url: '/adventures',
 		method: 'PUT'
 	},
 	processAdventureCSV: {
@@ -130,27 +130,27 @@ export const adventures: AdventureObject = {
 		method: 'POST'
 	},
 	deleteAdventure: {
-		url: '/adventures/delete',
+		url: '/adventures',
 		method: 'DELETE'
 	}
 }
 
 export const todoAdventures: TodoAdventureObject = {
 	create: {
-		url: '/todo_adventures/create',
+		url: '/todo_adventures',
 		method: 'POST'
 	}
 }
 export const completedAdventures: CompletedAdventureObject = {
 	create: {
-		url: '/completed_adventures/create',
+		url: '/completed_adventures',
 		method: 'POST'
 	}
 }
 
 export const pictures: PicturesObject = {
 	upload: {
-		url: '/pictures/upload',
+		url: '/pictures',
 		method: 'POST'
 	},
 	delete: {
