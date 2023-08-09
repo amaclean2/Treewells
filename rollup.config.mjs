@@ -30,7 +30,10 @@ export default [
 			resolve(),
 			commonjs(),
 			PeerDepsExternalPlugin(),
-			typescript({ tsconfig: './tsconfig.json', sourceMap: true }),
+			typescript({
+				tsconfig: './tsconfig.json',
+				sourceMap: true
+			}),
 			terser()
 		],
 		external: ['react', 'react-dom']

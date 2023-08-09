@@ -10,7 +10,9 @@ export const initialAdventureState = {
 	adventureError: null,
 	startPosition: null,
 	isDeletePageOpen: false,
-	globalAdventureType: null
+	globalAdventureType: null,
+	isPathEditOn: false,
+	workingPath: []
 }
 
 export const adventureReducer = (
@@ -43,9 +45,6 @@ export const adventureReducer = (
 				currentAdventure: action.payload.currentAdventure,
 				adventureAddState: false
 			}
-		case 'enableMapDoubleClick':
-			// screen for adding a new adventure
-			return { ...state, adventureAddState: true }
 		case 'setCurrentAdventure':
 			return { ...state, currentAdventure: action.payload }
 		case 'closeAdventureView':
@@ -54,7 +53,8 @@ export const adventureReducer = (
 				adventureAddState: false,
 				currentAdventure: null,
 				adventureEditState: false,
-				isDeletePageOpen: false
+				isDeletePageOpen: false,
+				workingPath: []
 			}
 		case 'editAdventure':
 			return {
@@ -64,6 +64,12 @@ export const adventureReducer = (
 					[action.payload.name]: action.payload.value
 				}
 			}
+		/**
+		 * startNewAdventureProcess is triggered when the adventure type is selected
+		 * from the dropdown on creating a new adventure.
+		 * It's also enabled when the toggle of adventure types is selected, so I'm not sure this is the best place for
+		 * adventureAddState to be changed
+		 */
 		case 'startNewAdventureProcess':
 			Storage.setItem('globalAdventureType', action.payload)
 			return {
@@ -99,6 +105,21 @@ export const adventureReducer = (
 						(image) => image !== action.payload
 					)
 				}
+			}
+		case 'togglePathEdit':
+			return {
+				...state,
+				isPathEditOn: !state.isPathEditOn
+			}
+		case 'updateTrailPath':
+			return {
+				...state,
+				workingPath: [...state.workingPath, action.payload]
+			}
+		case 'setTrailPath':
+			return {
+				...state,
+				workingPath: action.payload
 			}
 		default:
 			return state

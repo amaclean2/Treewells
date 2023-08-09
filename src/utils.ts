@@ -92,15 +92,19 @@ export const fetcher = async (url: string, options?: OptionsType): Promise<any> 
 		headers.delete('content-type')
 	}
 
-	const responseData = await (
-		await fetch(`${Connections.restUrl}${url}`, {
-			...(body !== undefined && { body }),
-			headers,
-			method: options?.method ?? 'GET'
-		})
-	).json()
+	const response = await fetch(`${Connections.restUrl}${url}`, {
+		...(body !== undefined && { body }),
+		headers,
+		method: options?.method ?? 'GET'
+	})
 
-	if (responseData.statusCode - 200 >= 100) {
+	if (response.status === 204) {
+		return true
+	}
+
+	const responseData = await response.json()
+
+	if (response.status - 200 >= 100) {
 		throw responseData
 	} else {
 		return responseData

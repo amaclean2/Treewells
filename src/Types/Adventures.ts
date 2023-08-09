@@ -1,7 +1,7 @@
 import type { Dispatch } from 'react'
 import type { URLType } from './Cards'
 
-export type AdventureChoiceType = 'ski' | 'climb' | 'hike'
+export type AdventureChoiceType = 'ski' | 'climb' | 'hike' | 'bike'
 
 type CompletedUserType = {
 	adventure_id: number
@@ -41,37 +41,39 @@ type BasicAdventureType = {
 	adventure_name: string
 	adventure_type: AdventureChoiceType
 	bio?: string
-	completed_users: CompletedUserType[]
-	todo_users: TodoUserType[]
+	completed_users?: CompletedUserType[]
+	todo_users?: TodoUserType[]
 	coordinates: {
 		lat: number
 		lng: number
 	}
 	creator_email?: string
-	creator_id: number
-	creator_name: string
-	date_created: string
-	id: number
-	images: string[]
+	creator_id?: number
+	creator_name?: string
+	date_created?: string
+	id?: number
+	images?: string[]
 	nearest_city: string
 	public: boolean
-	rating: number
+	rating?: number
 }
 
 type SkiAdventureType = BasicAdventureType & {
-	approach_distance: string
-	aspect: string
-	avg_angle: number
-	max_angle: number
-	base_elevation: number
-	summit_elevaiton: number
-	difficulty: number
-	exposure: number
-	gear: string
-	season: string
+	distance?: number
+	aspect?: string
+	avg_angle?: number
+	max_angle?: number
+	base_elevation?: number
+	summit_elevaiton?: number
+	difficulty?: number
+	exposure?: number
+	gear?: string
+	season?: string
+	path?: TrailPath
 }
 
 type ClimbAdventureType = BasicAdventureType & {
+	distance?: number
 	approach: string
 	climb_type: string
 	first_ascent: string
@@ -82,11 +84,12 @@ type ClimbAdventureType = BasicAdventureType & {
 }
 
 type HikeAdventureType = BasicAdventureType & {
-	base_elevation: number
-	summit_elevation: number
-	difficulty: number
-	distance: number
-	season: string
+	base_elevation?: number
+	summit_elevation?: number
+	difficulty?: number
+	distance?: number
+	season?: string
+	path?: TrailPath
 }
 
 export type AdventureType = SkiAdventureType | ClimbAdventureType | HikeAdventureType
@@ -180,6 +183,24 @@ type DeleteAdventureImageType = {
 	payload: URLType
 }
 
+type TogglePathEdit = {
+	type: 'togglePathEdit'
+}
+
+type UpdateTrailPath = {
+	type: 'updateTrailPath'
+	payload: PathCoordinates
+}
+
+type SetTrailPath = {
+	type: 'setTrailPath'
+	payload: TrailPath
+}
+
+export type PathCoordinates = [number, number]
+
+export type TrailPath = PathCoordinates[]
+
 export type AdventureAction =
 	| SetAllAdventuresType
 	| SetNewAdventureView
@@ -197,6 +218,9 @@ export type AdventureAction =
 	| SetInitialValues
 	| UpdateAdventureImages
 	| DeleteAdventureImageType
+	| TogglePathEdit
+	| UpdateTrailPath
+	| SetTrailPath
 
 export type AdventureState = {
 	allAdventures: AdventureList | null
@@ -204,6 +228,7 @@ export type AdventureState = {
 	currentAdventure: AdventureType | null
 	adventureEditState: boolean
 	adventureError: null | string
+	isPathEditOn: boolean
 	startPosition: {
 		latitude: number
 		longitude: number
@@ -211,6 +236,7 @@ export type AdventureState = {
 	} | null
 	isDeletePageOpen: boolean
 	globalAdventureType: AdventureChoiceType | null
+	workingPath: TrailPath
 }
 
 export type AdventureContext = AdventureState & { adventureDispatch: Dispatch<AdventureAction> }

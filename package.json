@@ -1,6 +1,6 @@
 {
 	"name": "@amaclean2/sundaypeak-treewells",
-	"version": "0.0.13",
+	"version": "0.0.16",
 	"description": "A react hooks library for SundayPeak",
 	"main": "dist/cjs/index.js",
 	"repository": {
@@ -16,7 +16,7 @@
 	],
 	"types": "dist/index.d.ts",
 	"scripts": {
-		"build": "rm -fR dist && npm run test && rollup -c",
+		"build": "NODE_ENV=production rm -fR dist && npm run test && rollup -c",
 		"build:dev": "rm -fR dist && GENERATE_SOURCEMAP=false NODE_ENV=development rollup -c -w",
 		"lint": "eslint src/*",
 		"test": "npm run lint && jest"
@@ -39,6 +39,7 @@
 		"@testing-library/jest-dom": "^5.16.5",
 		"@testing-library/react": "^14.0.0",
 		"@testing-library/user-event": "^14.4.3",
+		"@turf/turf": "^6.5.0",
 		"@types/jest": "^29.4.3",
 		"@types/jest-when": "^3.5.2",
 		"@types/react": "^18.0.28",
