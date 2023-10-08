@@ -13,10 +13,14 @@ import { completedAdventures } from '../Apis'
 export const useSaveCompletedAdventure = (): {
 	saveCompletedAdventure: ({
 		adventureId,
-		adventureType
+		adventureType,
+		distance,
+		rating
 	}: {
 		adventureId: number
 		adventureType: AdventureChoiceType
+		distance: string
+		rating: string
 	}) => Promise<void>
 } => {
 	const { loggedInUser, userDispatch } = useUserStateContext()
@@ -25,10 +29,14 @@ export const useSaveCompletedAdventure = (): {
 
 	const saveCompletedAdventure = async ({
 		adventureId,
-		adventureType
+		adventureType,
+		distance,
+		rating
 	}: {
 		adventureId: number
 		adventureType: AdventureChoiceType
+		distance: string
+		rating: string
 	}): Promise<void> => {
 		try {
 			const {
@@ -39,7 +47,9 @@ export const useSaveCompletedAdventure = (): {
 				method: completedAdventures.create.method,
 				body: {
 					adventure_id: adventureId,
-					public: false
+					public: false,
+					distance,
+					rating
 				}
 			})
 
