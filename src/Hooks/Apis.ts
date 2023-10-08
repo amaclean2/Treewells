@@ -30,13 +30,8 @@ type AdventureObject = {
 	processAdventureCSV: ApiObject
 	builkImport: ApiObject
 	deleteAdventure: ApiObject
-}
-
-type TodoAdventureObject = {
-	create: ApiObject
-}
-type CompletedAdventureObject = {
-	create: ApiObject
+	createTodo: ApiObject
+	completeAdventure: ApiObject
 }
 
 type PicturesObject = {
@@ -132,18 +127,13 @@ export const adventures: AdventureObject = {
 	deleteAdventure: {
 		url: '/adventures',
 		method: 'DELETE'
-	}
-}
-
-export const todoAdventures: TodoAdventureObject = {
-	create: {
-		url: '/todo_adventures',
+	},
+	createTodo: {
+		url: '/adventures/todo',
 		method: 'POST'
-	}
-}
-export const completedAdventures: CompletedAdventureObject = {
-	create: {
-		url: '/completed_adventures',
+	},
+	completeAdventure: {
+		url: '/adventures/complete',
 		method: 'POST'
 	}
 }

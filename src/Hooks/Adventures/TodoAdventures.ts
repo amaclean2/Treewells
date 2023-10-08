@@ -1,7 +1,7 @@
 import { useAdventureStateContext } from '../../Providers/AdventureStateProvider'
 import type { AdventureChoiceType } from '../../Types/Adventures'
 import { fetcher } from '../../utils'
-import { todoAdventures } from '../Apis'
+import { adventures } from '../Apis'
 import { useHandleAdventureResponses } from './handleResponses'
 
 export const useSaveTodo = (): {
@@ -25,8 +25,8 @@ export const useSaveTodo = (): {
 		try {
 			const {
 				data: { todo }
-			} = await fetcher(todoAdventures.create.url, {
-				method: todoAdventures.create.method,
+			} = await fetcher(adventures.createTodo.url, {
+				method: adventures.createTodo.method,
 				body: {
 					adventure_id: adventureId,
 					public: false

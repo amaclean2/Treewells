@@ -89,7 +89,7 @@ export const useMessages = (): {
 		return conversationMatch ? matchingConversation : false
 	}
 
-	const addConversation = ({ userId, name }: { userId: number; name: string }): void => {
+	const addConversation = ({ userId, name }: { userId: number; name?: string }): void => {
 		const conversationExists = checkIfConversationExists([userId, loggedInUser?.id as number])
 
 		if (conversationExists === false) {

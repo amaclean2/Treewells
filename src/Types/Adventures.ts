@@ -55,7 +55,8 @@ type BasicAdventureType = {
 	images?: string[]
 	nearest_city: string
 	public: boolean
-	rating?: number
+	difficulty?: string
+	rating?: string
 }
 
 type SkiAdventureType = BasicAdventureType & {
@@ -65,7 +66,6 @@ type SkiAdventureType = BasicAdventureType & {
 	max_angle?: number
 	base_elevation?: number
 	summit_elevaiton?: number
-	difficulty?: number
 	exposure?: number
 	gear?: string
 	season?: string
@@ -77,7 +77,6 @@ type ClimbAdventureType = BasicAdventureType & {
 	approach: string
 	climb_type: string
 	first_ascent: string
-	grade: string
 	pitches: number
 	protection: string
 	season: string
@@ -86,13 +85,27 @@ type ClimbAdventureType = BasicAdventureType & {
 type HikeAdventureType = BasicAdventureType & {
 	base_elevation?: number
 	summit_elevation?: number
-	difficulty?: number
 	distance?: number
 	season?: string
 	path?: TrailPath
 }
 
-export type AdventureType = SkiAdventureType | ClimbAdventureType | HikeAdventureType
+type BikeAdventureType = BasicAdventureType & {
+	base_elevation?: number
+	summit_elevation?: number
+	distance?: number
+	season?: string
+	path?: TrailPath
+	climb?: number
+	descent?: number
+}
+
+export type AdventureType =
+	| SkiAdventureType
+	| ClimbAdventureType
+	| HikeAdventureType
+	| BikeAdventureType
+
 export type MapPosition = {
 	longitude: number
 	latitude: number
@@ -189,7 +202,7 @@ type TogglePathEdit = {
 
 type UpdateTrailPath = {
 	type: 'updateTrailPath'
-	payload: PathCoordinates
+	payload: TrailPath
 }
 
 type SetTrailPath = {

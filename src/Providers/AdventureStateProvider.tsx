@@ -13,11 +13,14 @@ const getStartPos = async (): Promise<{
 	const adventureType = (await Storage.getItem('globalAdventureType')) as AdventureChoiceType
 
 	return {
-		position: (stringifiedStartPos !== null && JSON.parse(stringifiedStartPos)) ?? {
-			latitude: 39.347,
-			longitude: -120.194,
-			zoom: 10
-		},
+		position:
+			stringifiedStartPos !== null
+				? JSON.parse(stringifiedStartPos)
+				: {
+						latitude: 39.347,
+						longitude: -120.194,
+						zoom: 10
+				  },
 		adventureType: adventureType ?? 'ski'
 	}
 }

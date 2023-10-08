@@ -2,7 +2,7 @@ import * as turf from '@turf/turf'
 
 import { useAdventureStateContext } from '../../Providers/AdventureStateProvider'
 import { useCardStateContext } from '../../Providers/CardStateProvider'
-import type { AdventureChoiceType, AdventureType, PathCoordinates } from '../../Types/Adventures'
+import type { AdventureChoiceType, AdventureType, TrailPath } from '../../Types/Adventures'
 import { fetcher, useDebounce } from '../../utils'
 import { adventures } from '../Apis'
 import type { EventChoiceTypes } from '../Users'
@@ -147,16 +147,16 @@ export const useSaveAdventure = (): {
 	setAdventureError: (adventureError: string) => void
 	togglePathEdit: () => void
 	savePath: () => void
-	updatePath: (point: PathCoordinates) => void
+	updatePath: (newPath: TrailPath) => void
 	deletePath: () => void
 } => {
 	const { adventureDispatch, currentAdventure, globalAdventureType, workingPath } =
 		useAdventureStateContext()
 
 	const saveEditAdventure = useDebounce(
-		({ name, value }: { name: string; value: string | number }): void => {
+		async ({ name, value }: { name: string; value: string | number }): Promise<void> => {
 			try {
-				fetcher(adventures.editAdventure.url, {
+				return await fetcher(adventures.editAdventure.url, {
 					method: adventures.editAdventure.method,
 					body: {
 						field: {
@@ -187,9 +187,13 @@ export const useSaveAdventure = (): {
 	}
 
 	const savePath = (): void => {
-		saveEditAdventure({ name: 'path', value: workingPath })
-		saveEditAdventure({ name: 'distance', value: currentAdventure?.distance })
-		togglePathEdit()
+		try {
+			saveEditAdventure({ name: 'path', value: workingPath })
+
+			togglePathEdit()
+		} catch (error) {
+			console.log('Error saving path', error)
+		}
 	}
 
 	const deletePath = (): void => {
@@ -197,8 +201,8 @@ export const useSaveAdventure = (): {
 		togglePathEdit()
 	}
 
-	const updatePath = (point: PathCoordinates): void => {
-		adventureDispatch({ type: 'updateTrailPath', payload: point })
+	const updatePath = (newPath: TrailPath): void => {
+		adventureDispatch({ type: 'updateTrailPath', payload: newPath })
 
 		if (workingPath.length > 1) {
 			const turfLine = turf.lineString(workingPath)

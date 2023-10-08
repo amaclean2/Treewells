@@ -114,12 +114,12 @@ export const adventureReducer = (
 		case 'updateTrailPath':
 			return {
 				...state,
-				workingPath: [...state.workingPath, action.payload]
+				workingPath: action.payload
 			}
 		case 'setTrailPath':
 			return {
 				...state,
-				workingPath: action.payload
+				workingPath: action.payload ?? []
 			}
 		default:
 			return state
