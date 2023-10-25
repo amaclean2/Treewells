@@ -240,7 +240,7 @@ export const useSaveAdventure = (): {
 		}
 
 		if (globalAdventureType !== null && ['ski', 'hike', 'bike'].includes(globalAdventureType)) {
-			newDefaultAdventure.difficulty = 1
+			newDefaultAdventure.difficulty = '0:0'
 		}
 
 		try {

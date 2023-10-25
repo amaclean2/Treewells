@@ -23,17 +23,15 @@ export const useMessages = (): {
 			websocket.close()
 		}
 
-		const localWebSocket = new WebSocket(Connections.websocketUrl)
-
-		localWebSocket.onopen = async (): Promise<void> => {
+		Connections.websocket.onopen = async (): Promise<void> => {
 			const token = await Storage.getItem('token')
-			localWebSocket.send(JSON.stringify({ type: 'verifyUser', token }))
+			Connections.websocket.send(JSON.stringify({ type: 'verifyUser', token }))
 		}
 
-		localWebSocket.onmessage = ({ data }) => {
+		Connections.websocket.onmessage = ({ data }) => {
 			const response = JSON.parse(data)
 			if (response.connected !== undefined) {
-				localWebSocket.send(JSON.stringify({ type: 'getAllConversations' }))
+				Connections.websocket.send(JSON.stringify({ type: 'getAllConversations' }))
 			} else if (response.conversations !== undefined) {
 				messageDispatch({ type: 'setConversations', payload: response.conversations })
 			} else if (response.messages !== undefined) {
@@ -48,11 +46,11 @@ export const useMessages = (): {
 			}
 		}
 
-		localWebSocket.onclose = () => {
+		Connections.websocket.onclose = () => {
 			console.log('The web socket has been closed')
 		}
 
-		messageDispatch({ type: 'initiateConnection', payload: localWebSocket })
+		messageDispatch({ type: 'initiateConnection', payload: Connections.websocket })
 	}
 
 	const checkIfConversationExists = (userIds: number[]): false | number => {

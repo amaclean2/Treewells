@@ -40,15 +40,15 @@ export class Storage {
 
 export class Connections {
 	public static restUrl: string
-	public static websocketUrl: string
+	public static websocket: WebSocket
 	public static isReady: boolean = false
 
 	public static setConnections(
-		backendConnections: { restUrl: string; websocketUrl: string },
+		backendConnections: { restUrl: string; websocket: WebSocket },
 		newStorageApi: any
 	): void {
 		this.restUrl = backendConnections.restUrl
-		this.websocketUrl = backendConnections.websocketUrl
+		this.websocket = backendConnections.websocket
 		Storage.setApi(newStorageApi)
 		this.isReady = true
 	}
