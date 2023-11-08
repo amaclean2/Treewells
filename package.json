@@ -1,6 +1,6 @@
 {
 	"name": "@amaclean2/sundaypeak-treewells",
-	"version": "1.2.0",
+	"version": "1.2.11",
 	"description": "A react hooks library for SundayPeak",
 	"main": "dist/cjs/index.js",
 	"repository": {

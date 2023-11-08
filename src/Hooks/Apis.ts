@@ -41,6 +41,11 @@ type PicturesObject = {
 	changeProfilePicture: ApiObject
 }
 
+type ConversationsObject = {
+	create: ApiObject
+	getConversations: ApiObject
+}
+
 export const users: UserObject = {
 	create: {
 		url: '/users',
@@ -154,5 +159,16 @@ export const pictures: PicturesObject = {
 	deleteProfilePicture: {
 		url: '/pictures/deleteProfilePicture',
 		method: 'PUT'
+	}
+}
+
+export const conversations: ConversationsObject = {
+	getConversations: {
+		url: '/conversations',
+		method: 'GET'
+	},
+	create: {
+		url: '/conversations',
+		method: 'POST'
 	}
 }

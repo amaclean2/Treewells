@@ -1,11 +1,13 @@
 import { Connections, Storage } from '../../config'
 import { useMessagingStateContext } from '../../Providers/MessageStateProvider'
-import { useUserStateContext } from '../../Providers/UserStateProvider'
+import { fetcher } from '../../utils'
+import { conversations } from '../Apis'
 
 export const useMessages = (): {
 	initiateConnection: () => void
-	addConversation: ({ userId, name }: { userId: number; name: string }) => void
+	addConversation: ({ userId }: { userId: number }) => void
 	getConversation: ({ conversationId }: { conversationId: number }) => void
+	openConversationWithFriend: ({ userId }: { userId: number }) => Promise<void>
 	sendMessage: ({
 		messageBody,
 		conversationId
@@ -13,25 +15,29 @@ export const useMessages = (): {
 		messageBody: string
 		conversationId: number
 	}) => void
-	closeConnection: () => void
+	closeConnection: (reason: string) => void
 } => {
-	const { messageDispatch, websocket, conversations } = useMessagingStateContext()
-	const { loggedInUser } = useUserStateContext()
+	const { messageDispatch, websocket } = useMessagingStateContext()
 
 	const initiateConnection = (): void => {
 		if (websocket !== null) {
 			websocket.close()
 		}
 
-		Connections.websocket.onopen = async (): Promise<void> => {
+		console.log(`Opening connection to ${Connections.websocketUrl}`)
+		const localWebSocket = new WebSocket(Connections.websocketUrl)
+		localWebSocket.binaryType = 'blob'
+
+		localWebSocket.onopen = async (): Promise<void> => {
+			console.log('Websocket connection established')
 			const token = await Storage.getItem('token')
-			Connections.websocket.send(JSON.stringify({ type: 'verifyUser', token }))
+			localWebSocket.send(JSON.stringify({ type: 'verifyUser', token }))
 		}
 
-		Connections.websocket.onmessage = ({ data }) => {
+		localWebSocket.onmessage = ({ data }) => {
 			const response = JSON.parse(data)
 			if (response.connected !== undefined) {
-				Connections.websocket.send(JSON.stringify({ type: 'getAllConversations' }))
+				localWebSocket.send(JSON.stringify({ type: 'getAllConversations' }))
 			} else if (response.conversations !== undefined) {
 				messageDispatch({ type: 'setConversations', payload: response.conversations })
 			} else if (response.messages !== undefined) {
@@ -46,54 +52,36 @@ export const useMessages = (): {
 			}
 		}
 
-		Connections.websocket.onclose = () => {
+		localWebSocket.onerror = (error) => {
+			console.log({ error })
+		}
+
+		localWebSocket.onclose = (event) => {
+			console.log({ event })
 			console.log('The web socket has been closed')
 		}
 
-		messageDispatch({ type: 'initiateConnection', payload: Connections.websocket })
+		messageDispatch({ type: 'initiateConnection', payload: localWebSocket })
 	}
 
-	const checkIfConversationExists = (userIds: number[]): false | number => {
-		if (conversations === null) {
-			return false
-		}
-
-		// sort the userIds and turn the list into a string
-		const userIdString = userIds.sort((a, b) => a - b).join(',')
-
-		let matchingConversation: number = -1
-
-		// sort the userIds of each conversation and turn them into a string
-		const conversationIdMap = Object.values(conversations).map((conversation) => ({
-			id: conversation.conversation_id,
-			users: conversation.users
-				.map((user) => user.user_id)
-				.sort((a, b) => a - b)
-				.join(',')
-		}))
-
-		// see if any of the userIds in the conversations match the one provided
-		const conversationMatch = conversationIdMap.some((conversation) => {
-			const isMatch = userIdString === conversation.users
-
-			if (isMatch) {
-				matchingConversation = conversation.id
-				return true
-			}
-
-			return false
-		})
-
-		return conversationMatch ? matchingConversation : false
+	const addConversation = ({ userId }: { userId: number }): void => {
+		websocket?.send(JSON.stringify({ type: 'createNewConversation', userIds: [userId] }))
 	}
 
-	const addConversation = ({ userId, name }: { userId: number; name?: string }): void => {
-		const conversationExists = checkIfConversationExists([userId, loggedInUser?.id as number])
+	const openConversationWithFriend = async ({ userId }: { userId: number }): Promise<void> => {
+		try {
+			const {
+				data: { conversation }
+			} = await fetcher(`${conversations.create.url}`, {
+				method: conversations.create.method,
+				body: {
+					user_ids: [userId]
+				}
+			})
 
-		if (conversationExists === false) {
-			websocket?.send(JSON.stringify({ type: 'createNewConversation', userIds: [userId], name }))
-		} else {
-			messageDispatch({ type: 'setCurrentConversation', payload: conversationExists })
+			messageDispatch({ type: 'addNewConversation', payload: conversation })
+		} catch (error) {
+			console.log(error)
 		}
 	}
 
@@ -114,14 +102,15 @@ export const useMessages = (): {
 		websocket?.send(JSON.stringify({ type: 'getConversation', conversationId }))
 	}
 
-	const closeConnection = (): void => {
-		websocket?.close(1000, 'Conversation window was closed')
+	const closeConnection = (reason: string): void => {
+		websocket?.close(1000, `Conversation window was closed because ${reason}`)
 	}
 
 	return {
 		initiateConnection,
 		addConversation,
 		getConversation,
+		openConversationWithFriend,
 		sendMessage,
 		closeConnection
 	}
