@@ -44,6 +44,7 @@ export const messageReducer = (state: MessageState, action: MessageAction): Mess
 			return {
 				...state,
 				currentConversationId: action.payload,
+				messages: [],
 				conversations: {
 					...state.conversations,
 					[action.payload]: {
@@ -91,7 +92,7 @@ export const messageReducer = (state: MessageState, action: MessageAction): Mess
 					}
 				}
 			}
-		case 'receiveMessage':
+		case 'receiveMessage': {
 			currentMessages = state.messages ?? []
 
 			if (state.conversations?.[action.payload.conversation_id] === undefined) {
@@ -104,7 +105,7 @@ export const messageReducer = (state: MessageState, action: MessageAction): Mess
 
 			return {
 				...state,
-				messages: [...currentMessages, action.payload],
+				messages: [action.payload].concat(state.messages ?? []),
 				conversations: {
 					...state.conversations,
 					[action.payload.conversation_id]: {
@@ -114,6 +115,7 @@ export const messageReducer = (state: MessageState, action: MessageAction): Mess
 					}
 				}
 			}
+		}
 		default:
 			return state
 	}

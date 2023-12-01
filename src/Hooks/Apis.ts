@@ -25,6 +25,7 @@ type AdventureObject = {
 	create: ApiObject
 	getAllAdventures: ApiObject
 	getAdventureDetails: ApiObject
+	getAdventuresByDistance: ApiObject
 	searchForAdventures: ApiObject
 	editAdventure: ApiObject
 	processAdventureCSV: ApiObject
@@ -111,6 +112,10 @@ export const adventures: AdventureObject = {
 	},
 	getAdventureDetails: {
 		url: '/adventures/details',
+		method: 'GET'
+	},
+	getAdventuresByDistance: {
+		url: '/adventures/distance',
 		method: 'GET'
 	},
 	searchForAdventures: {

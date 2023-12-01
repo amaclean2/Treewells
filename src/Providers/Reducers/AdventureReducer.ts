@@ -4,6 +4,8 @@ import type { URLType } from '../../Types/Cards'
 
 export const initialAdventureState = {
 	allAdventures: null,
+	closeAdventures: null,
+	adventuresList: null,
 	adventureAddState: false,
 	currentAdventure: null,
 	adventureEditState: false,
@@ -26,6 +28,17 @@ export const adventureReducer = (
 				...state,
 				startPosition: action.payload.startPosition,
 				globalAdventureType: action.payload.globalAdventureType
+			}
+		case 'setCloseAdventures':
+			return {
+				...state,
+				closeAdventures: action.payload
+			}
+		case 'setAdventuresList':
+			// the list of adventures to show near the user in the app
+			return {
+				...state,
+				adventuresList: action.payload
 			}
 		case 'updateStartPosition':
 			Storage.setItem('startPos', JSON.stringify(action.payload))

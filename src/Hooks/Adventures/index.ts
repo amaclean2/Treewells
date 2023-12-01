@@ -10,6 +10,22 @@ import type { EventChoiceTypes } from '../Users'
 export const useGetAdventures = (): {
 	getAdventure: ({ id, type }: { id: number; type: AdventureChoiceType }) => Promise<void>
 	getAllAdventures: ({ type }: { type: AdventureChoiceType }) => Promise<void>
+	getNearbyAdventures: ({
+		type,
+		coordinates
+	}: {
+		type: AdventureChoiceType
+		coordinates: { lat: number; lng: number }
+	}) => Promise<void>
+	getAdventureList: ({
+		type,
+		coordinates,
+		count
+	}: {
+		type: AdventureChoiceType
+		coordinates: { lat: number; lng: number }
+		count?: number
+	}) => Promise<void>
 	searchAdventures: ({ searchQuery }: { searchQuery: string }) => Promise<any>
 	changeAdventureType: ({ type }: { type: AdventureChoiceType }) => void
 	enableNewAdventureClick: ({ type }: { type: AdventureChoiceType }) => void
@@ -47,6 +63,48 @@ export const useGetAdventures = (): {
 
 			throw error
 		}
+	}
+
+	const getNearbyAdventures = async ({
+		type,
+		coordinates
+	}: {
+		type: AdventureChoiceType
+		coordinates: { lat: number; lng: number }
+	}): Promise<void> => {
+		try {
+			const {
+				data: { adventures: closeAdventures }
+			} = await fetcher(
+				`${adventures.getAdventuresByDistance.url}?adventure_type=${type}&coordinates_lat=${
+					coordinates.lat
+				}&coordinates_lng=${coordinates.lng}&count=${10}`,
+				{ method: adventures.getAdventuresByDistance.method }
+			)
+
+			adventureDispatch({ type: 'setCloseAdventures', payload: closeAdventures })
+		} catch (error) {}
+	}
+
+	const getAdventureList = async ({
+		type,
+		coordinates,
+		count = 10
+	}: {
+		type: AdventureChoiceType
+		coordinates: { lat: number; lng: number }
+		count?: number
+	}): Promise<void> => {
+		try {
+			const {
+				data: { adventures: closeAdventures }
+			} = await fetcher(
+				`${adventures.getAdventuresByDistance.url}?adventure_type=${type}&coordinates_lat=${coordinates.lat}&coordinates_lng=${coordinates.lng}&count=${count}`,
+				{ method: adventures.getAdventuresByDistance.method }
+			)
+
+			adventureDispatch({ type: 'setAdventuresList', payload: closeAdventures })
+		} catch (error) {}
 	}
 
 	// const shareAdventure = ({ id }: { id: number }) => {
@@ -122,6 +180,8 @@ export const useGetAdventures = (): {
 
 	return {
 		getAdventure,
+		getNearbyAdventures,
+		getAdventureList,
 		getAllAdventures,
 		searchAdventures,
 		changeAdventureType,

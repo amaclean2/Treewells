@@ -100,6 +100,15 @@ type BikeAdventureType = BasicAdventureType & {
 	descent?: number
 }
 
+type CloseAdventureObject = {
+	id: number
+	adventure_name: string
+	difficulty: string
+	rating: string
+	nearest_city: string
+	bio: string
+}
+
 export type AdventureType =
 	| SkiAdventureType
 	| ClimbAdventureType
@@ -210,6 +219,16 @@ type SetTrailPath = {
 	payload: TrailPath
 }
 
+type SetCloseAdventures = {
+	type: 'setCloseAdventures'
+	payload: CloseAdventureObject[]
+}
+
+type SetAdventuresList = {
+	type: 'setAdventuresList'
+	payload: CloseAdventureObject[]
+}
+
 export type PathCoordinates = [number, number]
 
 export type TrailPath = PathCoordinates[]
@@ -234,9 +253,13 @@ export type AdventureAction =
 	| TogglePathEdit
 	| UpdateTrailPath
 	| SetTrailPath
+	| SetCloseAdventures
+	| SetAdventuresList
 
 export type AdventureState = {
 	allAdventures: AdventureList | null
+	closeAdventures: CloseAdventureObject[] | null
+	adventuresList: CloseAdventureObject[] | null
 	adventureAddState: boolean
 	currentAdventure: AdventureType | null
 	adventureEditState: boolean

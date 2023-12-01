@@ -20,7 +20,7 @@ export type TodoAdventureForUserType = {
 type FriendType = {
 	display_name: string
 	email: string
-	id: number
+	user_id: number
 }
 
 export type UserStatType = 'friends' | 'completed'

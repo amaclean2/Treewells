@@ -24,20 +24,22 @@ export const useMessages = (): {
 			websocket.close()
 		}
 
-		console.log(`Opening connection to ${Connections.websocketUrl}`)
 		const localWebSocket = new WebSocket(Connections.websocketUrl)
 		localWebSocket.binaryType = 'blob'
 
 		localWebSocket.onopen = async (): Promise<void> => {
 			console.log('Websocket connection established')
-			const token = await Storage.getItem('token')
-			localWebSocket.send(JSON.stringify({ type: 'verifyUser', token }))
+			Storage.getItem('token').then((token) =>
+				localWebSocket.send(JSON.stringify({ type: 'verifyUser', token }))
+			)
 		}
 
 		localWebSocket.onmessage = ({ data }) => {
 			const response = JSON.parse(data)
 			if (response.connected !== undefined) {
-				localWebSocket.send(JSON.stringify({ type: 'getAllConversations' }))
+				Storage.getItem('token').then((token) =>
+					localWebSocket.send(JSON.stringify({ type: 'getAllConversations', token }))
+				)
 			} else if (response.conversations !== undefined) {
 				messageDispatch({ type: 'setConversations', payload: response.conversations })
 			} else if (response.messages !== undefined) {
@@ -65,7 +67,10 @@ export const useMessages = (): {
 	}
 
 	const addConversation = ({ userId }: { userId: number }): void => {
-		websocket?.send(JSON.stringify({ type: 'createNewConversation', userIds: [userId] }))
+		Storage.getItem('token').then(
+			(token) =>
+				websocket?.send(JSON.stringify({ type: 'createNewConversation', userIds: [userId], token }))
+		)
 	}
 
 	const openConversationWithFriend = async ({ userId }: { userId: number }): Promise<void> => {
@@ -92,14 +97,20 @@ export const useMessages = (): {
 		messageBody: string
 		conversationId: number
 	}): void => {
-		websocket?.send(JSON.stringify({ type: 'sendMessage', messageBody, conversationId }))
+		Storage.getItem('token').then(
+			(token) =>
+				websocket?.send(JSON.stringify({ type: 'sendMessage', messageBody, conversationId, token }))
+		)
 	}
 
 	const getConversation = ({ conversationId }: { conversationId: number }): void => {
 		// set the current conversation id and send a message to the websocket that we'd like all the messages
 		// for that conversation
 		messageDispatch({ type: 'setCurrentConversation', payload: conversationId })
-		websocket?.send(JSON.stringify({ type: 'getConversation', conversationId }))
+		console.log('Getting messages...')
+		Storage.getItem('token').then(
+			(token) => websocket?.send(JSON.stringify({ type: 'getConversation', conversationId, token }))
+		)
 	}
 
 	const closeConnection = (reason: string): void => {

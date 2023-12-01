@@ -90,7 +90,7 @@ export const useCreateUser = (): {
 				body: { password: formFields.password, reset_token: resetToken }
 			})
 		} catch (error) {
-			userDispatch({ type: 'setUserError', payload: 'saving the new password failed' })
+			userDispatch({ type: 'setUserError', payload: 'server error: saving the new password' })
 			throw error
 		}
 	}
@@ -170,7 +170,7 @@ export const useGetUser = (): {
 					body: loginBody
 				})
 
-				handleLoginUserResponse(data)
+				return handleLoginUserResponse(data)
 			} catch (error: any) {
 				const { error: errorBody } = error
 				if (errorBody?.message !== undefined) {
