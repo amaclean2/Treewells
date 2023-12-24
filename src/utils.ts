@@ -74,7 +74,9 @@ export const fetcher = async (url: string, options?: OptionsType): Promise<any> 
 		headers.append(header.name, header.value)
 	})
 
-	if (token !== undefined) {
+	const hasHeader = options?.headers?.some(({ name }) => name.toLowerCase() === 'authorization')
+
+	if (token !== undefined && hasHeader !== true) {
 		headers.append('authorization', `Bearer ${token}`)
 	}
 
@@ -92,7 +94,9 @@ export const fetcher = async (url: string, options?: OptionsType): Promise<any> 
 		headers.delete('content-type')
 	}
 
-	const response = await fetch(`${Connections.restUrl}${url}`, {
+	const assembledUrl = url.includes('http') ? url : `${Connections.restUrl}${url}`
+
+	const response = await fetch(assembledUrl, {
 		...(body !== undefined && { body }),
 		headers,
 		method: options?.method ?? 'GET'

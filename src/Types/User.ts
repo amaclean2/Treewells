@@ -69,6 +69,10 @@ type LoginUserType = {
 	payload: UserType
 }
 
+type DeleteUserType = {
+	type: 'deleteUser'
+}
+
 type LogoutType = {
 	type: 'logout'
 }
@@ -134,6 +138,7 @@ export type UserAction =
 	| UpdateProfileImageType
 	| DeleteImageType
 	| DeleteProfileImageType
+	| DeleteUserType
 
 export type UserState = {
 	userError: null | string

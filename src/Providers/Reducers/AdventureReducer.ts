@@ -14,7 +14,8 @@ export const initialAdventureState = {
 	isDeletePageOpen: false,
 	globalAdventureType: null,
 	isPathEditOn: false,
-	workingPath: []
+	workingPath: [],
+	matchPath: true
 }
 
 export const adventureReducer = (
@@ -60,6 +61,8 @@ export const adventureReducer = (
 			}
 		case 'setCurrentAdventure':
 			return { ...state, currentAdventure: action.payload }
+		case 'toggleMatchPath':
+			return { ...state, matchPath: !state.matchPath }
 		case 'closeAdventureView':
 			return {
 				...state,

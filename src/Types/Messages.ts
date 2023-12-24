@@ -67,6 +67,14 @@ type SetMessageError = {
 	type: 'setMessageError'
 	payload: string
 }
+type SetDeviceToken = {
+	type: 'setDeviceToken'
+	payload: string
+}
+
+type CloseConnection = {
+	type: 'closeConnection'
+}
 
 export type MessageAction =
 	| NewConnectionType
@@ -77,6 +85,8 @@ export type MessageAction =
 	| SendMessage
 	| SetCurrentConversation
 	| SetMessageError
+	| SetDeviceToken
+	| CloseConnection
 
 export type MessageState = {
 	conversations: ConversationsType | null
@@ -84,6 +94,8 @@ export type MessageState = {
 	currentConversationId: number | null
 	websocket: WebSocket | null
 	messageError: string | null
+	newMessages: number
+	apnsDeviceToken: string | null
 }
 
 export type MessageContext = MessageState & { messageDispatch: Dispatch<MessageAction> }

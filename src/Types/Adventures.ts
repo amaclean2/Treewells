@@ -229,6 +229,10 @@ type SetAdventuresList = {
 	payload: CloseAdventureObject[]
 }
 
+type ToggleMatchPath = {
+	type: 'toggleMatchPath'
+}
+
 export type PathCoordinates = [number, number]
 
 export type TrailPath = PathCoordinates[]
@@ -255,6 +259,7 @@ export type AdventureAction =
 	| SetTrailPath
 	| SetCloseAdventures
 	| SetAdventuresList
+	| ToggleMatchPath
 
 export type AdventureState = {
 	allAdventures: AdventureList | null
@@ -273,6 +278,7 @@ export type AdventureState = {
 	isDeletePageOpen: boolean
 	globalAdventureType: AdventureChoiceType | null
 	workingPath: TrailPath
+	matchPath: boolean
 }
 
 export type AdventureContext = AdventureState & { adventureDispatch: Dispatch<AdventureAction> }

@@ -3,6 +3,7 @@ import type { ChangeEvent } from 'react'
 import { useUserStateContext } from '../../Providers/UserStateProvider'
 import type { FormFieldNameOptions, UserStatType, UserType } from '../../Types/User'
 import { fetcher, useDebounce } from '../../utils'
+import { Connections } from '../../config'
 import { users } from '../Apis'
 import { useHandleUserResponses } from './handleResponses'
 
@@ -32,7 +33,8 @@ export const useCreateUser = (): {
 					password_2,
 					first_name,
 					last_name,
-					legal
+					legal,
+					native: Connections.platform === 'native'
 				}
 
 				try {
@@ -160,7 +162,8 @@ export const useGetUser = (): {
 	const loginUser = async (): Promise<void> => {
 		const loginBody = {
 			email: formFields.email,
-			password: formFields.password
+			password: formFields.password,
+			native: Connections.platform === 'native'
 		}
 
 		if (formFields.email !== undefined && formFields.password !== undefined) {
@@ -176,7 +179,7 @@ export const useGetUser = (): {
 				if (errorBody?.message !== undefined) {
 					userDispatch({ type: 'setUserError', payload: errorBody.message })
 				}
-				throw new Error(error)
+				// throw new Error(error)
 			}
 		} else {
 			userDispatch({
@@ -214,6 +217,7 @@ export const useEditUser = (): {
 	editFormFields: (field: { name: FormFieldNameOptions; value: string | number | boolean }) => void
 	changeUserStatView: (newUserStatView: UserStatType) => void
 	toggleUserEditState: () => void
+	deleteUser: (confirmation: boolean) => Promise<void>
 } => {
 	const { userDispatch } = useUserStateContext()
 
@@ -254,11 +258,29 @@ export const useEditUser = (): {
 		userDispatch({ type: 'switchIsUserEditable' })
 	}
 
+	const deleteUser = async (confirmation: boolean): Promise<void> => {
+		try {
+			if (confirmation) {
+				await fetcher(users.delete.url, {
+					method: users.delete.method
+				})
+
+				userDispatch({ type: 'deleteUser' })
+			} else {
+				throw new Error('Confirmation parameter is required to delete a user')
+			}
+		} catch (error) {
+			console.log({ error })
+			userDispatch({ type: 'setUserError', payload: 'user delete request failed' })
+		}
+	}
+
 	return {
 		editUser,
 		editFormFields,
 		changeUserStatView,
-		toggleUserEditState
+		toggleUserEditState,
+		deleteUser
 	}
 }
 

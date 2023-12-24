@@ -9,7 +9,8 @@ const TokenTestConsumer = (): JSX.Element => {
 			type: 'setTokens',
 			payload: {
 				mapboxToken: '123',
-				mapboxStyleKey: '456'
+				mapboxStyleKey: '456',
+				githubIssueToken: '123'
 			}
 		})
 	}

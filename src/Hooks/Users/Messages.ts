@@ -5,23 +5,26 @@ import { conversations } from '../Apis'
 
 export const useMessages = (): {
 	initiateConnection: () => void
+	setDeviceToken: ({ deviceToken }: { deviceToken: string }) => void
 	addConversation: ({ userId }: { userId: number }) => void
 	getConversation: ({ conversationId }: { conversationId: number }) => void
 	openConversationWithFriend: ({ userId }: { userId: number }) => Promise<void>
 	sendMessage: ({
 		messageBody,
-		conversationId
+		conversationId,
+		senderName
 	}: {
 		messageBody: string
 		conversationId: number
+		senderName: string
 	}) => void
 	closeConnection: (reason: string) => void
 } => {
-	const { messageDispatch, websocket } = useMessagingStateContext()
+	const { messageDispatch, websocket, apnsDeviceToken } = useMessagingStateContext()
 
 	const initiateConnection = (): void => {
 		if (websocket !== null) {
-			websocket.close()
+			return
 		}
 
 		const localWebSocket = new WebSocket(Connections.websocketUrl)
@@ -29,8 +32,21 @@ export const useMessages = (): {
 
 		localWebSocket.onopen = async (): Promise<void> => {
 			console.log('Websocket connection established')
+			if (apnsDeviceToken === null && Connections.platform === 'native') {
+				console.error('Device token must be present before creating a websocket connection')
+				localWebSocket.close(
+					1008,
+					"device token is not present when trying to create a connection. Please restart the app and try again. If this doesn't work, file a bug report."
+				)
+			}
 			Storage.getItem('token').then((token) =>
-				localWebSocket.send(JSON.stringify({ type: 'verifyUser', token }))
+				localWebSocket.send(
+					JSON.stringify({
+						type: 'verifyUser',
+						token,
+						...(Connections.platform === 'native' && { deviceToken: apnsDeviceToken })
+					})
+				)
 			)
 		}
 
@@ -45,10 +61,23 @@ export const useMessages = (): {
 			} else if (response.messages !== undefined) {
 				messageDispatch({ type: 'setMessages', payload: response.messages })
 			} else if (response.conversation !== undefined) {
-				messageDispatch({
-					type: 'addNewConversation',
-					payload: response.conversation
-				})
+				if (response.conversation.last_message !== '') {
+					Storage.getItem('token').then(
+						(token) =>
+							localWebSocket?.send(
+								JSON.stringify({
+									type: 'getConversation',
+									conversationId: response.conversation.conversation_id,
+									token
+								})
+							)
+					)
+				} else {
+					messageDispatch({
+						type: 'addNewConversation',
+						payload: response.conversation
+					})
+				}
 			} else if (response.message !== undefined) {
 				messageDispatch({ type: 'receiveMessage', payload: response.message })
 			}
@@ -61,9 +90,14 @@ export const useMessages = (): {
 		localWebSocket.onclose = (event) => {
 			console.log({ event })
 			console.log('The web socket has been closed')
+			messageDispatch({ type: 'closeConnection' })
 		}
 
 		messageDispatch({ type: 'initiateConnection', payload: localWebSocket })
+	}
+
+	const setDeviceToken = ({ deviceToken }: { deviceToken: string }): void => {
+		return messageDispatch({ type: 'setDeviceToken', payload: deviceToken })
 	}
 
 	const addConversation = ({ userId }: { userId: number }): void => {
@@ -85,6 +119,7 @@ export const useMessages = (): {
 			})
 
 			messageDispatch({ type: 'addNewConversation', payload: conversation })
+			getConversation({ conversationId: conversation.conversation_id })
 		} catch (error) {
 			console.log(error)
 		}
@@ -92,14 +127,18 @@ export const useMessages = (): {
 
 	const sendMessage = ({
 		messageBody,
-		conversationId
+		conversationId,
+		senderName
 	}: {
 		messageBody: string
 		conversationId: number
+		senderName: string
 	}): void => {
 		Storage.getItem('token').then(
 			(token) =>
-				websocket?.send(JSON.stringify({ type: 'sendMessage', messageBody, conversationId, token }))
+				websocket?.send(
+					JSON.stringify({ type: 'sendMessage', messageBody, conversationId, token, senderName })
+				)
 		)
 	}
 
@@ -107,14 +146,14 @@ export const useMessages = (): {
 		// set the current conversation id and send a message to the websocket that we'd like all the messages
 		// for that conversation
 		messageDispatch({ type: 'setCurrentConversation', payload: conversationId })
-		console.log('Getting messages...')
 		Storage.getItem('token').then(
 			(token) => websocket?.send(JSON.stringify({ type: 'getConversation', conversationId, token }))
 		)
 	}
 
 	const closeConnection = (reason: string): void => {
-		websocket?.close(1000, `Conversation window was closed because ${reason}`)
+		websocket?.close(1000, `Conversation window was closed: ${reason}`)
+		messageDispatch({ type: 'closeConnection' })
 	}
 
 	return {
@@ -123,6 +162,7 @@ export const useMessages = (): {
 		getConversation,
 		openConversationWithFriend,
 		sendMessage,
-		closeConnection
+		closeConnection,
+		setDeviceToken
 	}
 }

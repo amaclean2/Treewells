@@ -41,15 +41,15 @@ export class Storage {
 export class Connections {
 	public static restUrl: string
 	public static websocketUrl: string
-	public static platform: 'web' | 'mobile'
+	public static platform?: 'web' | 'native'
 	public static isReady: boolean = false
 
 	public static setConnections(
-		backendConnections: { restUrl: string; websocketUrl: string; platform: 'web' | 'mobile' },
+		backendConnections: { restUrl: string; websocketUrl: string; platform?: 'web' | 'native' },
 		newStorageApi: any
 	): void {
 		this.restUrl = backendConnections.restUrl
-		this.websocketUrl = backendConnections.websocketUrl
+		this.websocketUrl = backendConnections.websocketUrl ?? 'web'
 		this.platform = backendConnections.platform
 		Storage.setApi(newStorageApi)
 		this.isReady = true

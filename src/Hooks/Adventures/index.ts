@@ -206,6 +206,7 @@ export const useSaveAdventure = (): {
 	}) => Promise<void>
 	setAdventureError: (adventureError: string) => void
 	togglePathEdit: () => void
+	toggleMatchPath: () => void
 	savePath: () => void
 	updatePath: (newPath: TrailPath) => void
 	deletePath: () => void
@@ -281,6 +282,10 @@ export const useSaveAdventure = (): {
 		adventureDispatch({ type: 'togglePathEdit' })
 	}
 
+	const toggleMatchPath = (): void => {
+		adventureDispatch({ type: 'toggleMatchPath' })
+	}
+
 	const createNewDefaultAdventure = async ({
 		longitude,
 		latitude
@@ -353,7 +358,8 @@ export const useSaveAdventure = (): {
 		togglePathEdit,
 		savePath,
 		deletePath,
-		updatePath
+		updatePath,
+		toggleMatchPath
 	}
 }
 
