@@ -20,7 +20,7 @@ export type TodoAdventureForUserType = {
 type FriendType = {
 	display_name: string
 	email: string
-	id: number
+	user_id: number
 }
 
 export type UserStatType = 'friends' | 'completed'
@@ -67,6 +67,10 @@ type EditUserType = {
 type LoginUserType = {
 	type: 'setLoggedInUser'
 	payload: UserType
+}
+
+type DeleteUserType = {
+	type: 'deleteUser'
 }
 
 type LogoutType = {
@@ -134,6 +138,7 @@ export type UserAction =
 	| UpdateProfileImageType
 	| DeleteImageType
 	| DeleteProfileImageType
+	| DeleteUserType
 
 export type UserState = {
 	userError: null | string

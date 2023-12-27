@@ -15,12 +15,12 @@ export default [
 			{
 				file: packageJson.main,
 				format: 'cjs',
-				sourcemap: true
+				sourcemap: false
 			},
 			{
 				file: packageJson.module,
 				format: 'esm',
-				sourcemap: true
+				sourcemap: false
 			}
 		],
 		watch: {
@@ -32,7 +32,7 @@ export default [
 			PeerDepsExternalPlugin(),
 			typescript({
 				tsconfig: './tsconfig.json',
-				sourceMap: true
+				sourceMap: false
 			}),
 			terser()
 		],

@@ -78,7 +78,7 @@ describe('testing the adventure state provider', () => {
 
 	test('Can update the start position', async () => {
 		await renderApp()
-		expect(screen.getByText(/Start position view/i).textContent).toBe('Start position view: ')
+		expect(screen.getByText(/Start position view/i).textContent).toBe('Start position view: 10')
 
 		const setAdventureErrorButton = screen.getByText(/Update Start Position/i)
 		fireEvent.click(setAdventureErrorButton)
@@ -104,7 +104,7 @@ describe('testing the adventure state provider', () => {
 	test('Can set initial values', async () => {
 		await renderApp()
 		expect(screen.getByText(/Adventure type view/i).textContent).toBe('Adventure type view: ski')
-		expect(screen.getByText(/Start position view/i).textContent).toBe('Start position view: ')
+		expect(screen.getByText(/Start position view/i).textContent).toBe('Start position view: 10')
 
 		const initialValuesButton = screen.getByText(/Update Initial Values/i)
 		fireEvent.click(initialValuesButton)

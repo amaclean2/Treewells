@@ -4,6 +4,8 @@ import type { URLType } from '../../Types/Cards'
 
 export const initialAdventureState = {
 	allAdventures: null,
+	closeAdventures: null,
+	adventuresList: null,
 	adventureAddState: false,
 	currentAdventure: null,
 	adventureEditState: false,
@@ -12,7 +14,8 @@ export const initialAdventureState = {
 	isDeletePageOpen: false,
 	globalAdventureType: null,
 	isPathEditOn: false,
-	workingPath: []
+	workingPath: [],
+	matchPath: true
 }
 
 export const adventureReducer = (
@@ -26,6 +29,17 @@ export const adventureReducer = (
 				...state,
 				startPosition: action.payload.startPosition,
 				globalAdventureType: action.payload.globalAdventureType
+			}
+		case 'setCloseAdventures':
+			return {
+				...state,
+				closeAdventures: action.payload
+			}
+		case 'setAdventuresList':
+			// the list of adventures to show near the user in the app
+			return {
+				...state,
+				adventuresList: action.payload
 			}
 		case 'updateStartPosition':
 			Storage.setItem('startPos', JSON.stringify(action.payload))
@@ -47,6 +61,8 @@ export const adventureReducer = (
 			}
 		case 'setCurrentAdventure':
 			return { ...state, currentAdventure: action.payload }
+		case 'toggleMatchPath':
+			return { ...state, matchPath: !state.matchPath }
 		case 'closeAdventureView':
 			return {
 				...state,
@@ -114,12 +130,12 @@ export const adventureReducer = (
 		case 'updateTrailPath':
 			return {
 				...state,
-				workingPath: [...state.workingPath, action.payload]
+				workingPath: action.payload
 			}
 		case 'setTrailPath':
 			return {
 				...state,
-				workingPath: action.payload
+				workingPath: action.payload ?? []
 			}
 		default:
 			return state

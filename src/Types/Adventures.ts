@@ -55,7 +55,8 @@ type BasicAdventureType = {
 	images?: string[]
 	nearest_city: string
 	public: boolean
-	rating?: number
+	difficulty?: string
+	rating?: string
 }
 
 type SkiAdventureType = BasicAdventureType & {
@@ -65,7 +66,6 @@ type SkiAdventureType = BasicAdventureType & {
 	max_angle?: number
 	base_elevation?: number
 	summit_elevaiton?: number
-	difficulty?: number
 	exposure?: number
 	gear?: string
 	season?: string
@@ -77,7 +77,6 @@ type ClimbAdventureType = BasicAdventureType & {
 	approach: string
 	climb_type: string
 	first_ascent: string
-	grade: string
 	pitches: number
 	protection: string
 	season: string
@@ -86,13 +85,36 @@ type ClimbAdventureType = BasicAdventureType & {
 type HikeAdventureType = BasicAdventureType & {
 	base_elevation?: number
 	summit_elevation?: number
-	difficulty?: number
 	distance?: number
 	season?: string
 	path?: TrailPath
 }
 
-export type AdventureType = SkiAdventureType | ClimbAdventureType | HikeAdventureType
+type BikeAdventureType = BasicAdventureType & {
+	base_elevation?: number
+	summit_elevation?: number
+	distance?: number
+	season?: string
+	path?: TrailPath
+	climb?: number
+	descent?: number
+}
+
+type CloseAdventureObject = {
+	id: number
+	adventure_name: string
+	difficulty: string
+	rating: string
+	nearest_city: string
+	bio: string
+}
+
+export type AdventureType =
+	| SkiAdventureType
+	| ClimbAdventureType
+	| HikeAdventureType
+	| BikeAdventureType
+
 export type MapPosition = {
 	longitude: number
 	latitude: number
@@ -189,12 +211,26 @@ type TogglePathEdit = {
 
 type UpdateTrailPath = {
 	type: 'updateTrailPath'
-	payload: PathCoordinates
+	payload: TrailPath
 }
 
 type SetTrailPath = {
 	type: 'setTrailPath'
 	payload: TrailPath
+}
+
+type SetCloseAdventures = {
+	type: 'setCloseAdventures'
+	payload: CloseAdventureObject[]
+}
+
+type SetAdventuresList = {
+	type: 'setAdventuresList'
+	payload: CloseAdventureObject[]
+}
+
+type ToggleMatchPath = {
+	type: 'toggleMatchPath'
 }
 
 export type PathCoordinates = [number, number]
@@ -221,9 +257,14 @@ export type AdventureAction =
 	| TogglePathEdit
 	| UpdateTrailPath
 	| SetTrailPath
+	| SetCloseAdventures
+	| SetAdventuresList
+	| ToggleMatchPath
 
 export type AdventureState = {
 	allAdventures: AdventureList | null
+	closeAdventures: CloseAdventureObject[] | null
+	adventuresList: CloseAdventureObject[] | null
 	adventureAddState: boolean
 	currentAdventure: AdventureType | null
 	adventureEditState: boolean
@@ -237,6 +278,7 @@ export type AdventureState = {
 	isDeletePageOpen: boolean
 	globalAdventureType: AdventureChoiceType | null
 	workingPath: TrailPath
+	matchPath: boolean
 }
 
 export type AdventureContext = AdventureState & { adventureDispatch: Dispatch<AdventureAction> }

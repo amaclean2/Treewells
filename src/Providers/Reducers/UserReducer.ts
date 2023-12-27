@@ -89,6 +89,12 @@ export const userReducer = (state: UserState, action: UserAction): UserState => 
 				formFields: { ...state.formFields, [action.payload.name]: action.payload.value },
 				userError: null
 			}
+		case 'deleteUser':
+			return {
+				...state,
+				loggedInUser: null,
+				workingUser: null
+			}
 		case 'clearForm':
 			return { ...state, userError: null, formFields: {} }
 		case 'switchIsUserEditable':

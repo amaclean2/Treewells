@@ -3,7 +3,8 @@ import type { TokenAction, TokenState } from '../../Types/Tokens'
 export const initialTokenState: TokenState = {
 	mapboxToken: null,
 	mapboxStyleKey: null,
-	tokenError: null
+	tokenError: null,
+	githubIssueToken: null
 }
 
 export const tokenReducer = (state: TokenState, action: TokenAction): TokenState => {
@@ -12,7 +13,8 @@ export const tokenReducer = (state: TokenState, action: TokenAction): TokenState
 			return {
 				...state,
 				mapboxToken: action.payload.mapboxToken,
-				mapboxStyleKey: action.payload.mapboxStyleKey
+				mapboxStyleKey: action.payload.mapboxStyleKey,
+				githubIssueToken: action.payload.githubIssueToken
 			}
 		case 'setTokenError':
 			return {

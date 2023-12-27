@@ -1,130 +1,168 @@
 import { Connections, Storage } from '../../config'
 import { useMessagingStateContext } from '../../Providers/MessageStateProvider'
-import { useUserStateContext } from '../../Providers/UserStateProvider'
+import { fetcher } from '../../utils'
+import { conversations } from '../Apis'
 
 export const useMessages = (): {
 	initiateConnection: () => void
-	addConversation: ({ userId, name }: { userId: number; name: string }) => void
+	setDeviceToken: ({ deviceToken }: { deviceToken: string }) => void
+	addConversation: ({ userId }: { userId: number }) => void
 	getConversation: ({ conversationId }: { conversationId: number }) => void
+	openConversationWithFriend: ({ userId }: { userId: number }) => Promise<void>
 	sendMessage: ({
 		messageBody,
-		conversationId
+		conversationId,
+		senderName
 	}: {
 		messageBody: string
 		conversationId: number
+		senderName: string
 	}) => void
-	closeConnection: () => void
+	closeConnection: (reason: string) => void
 } => {
-	const { messageDispatch, websocket, conversations } = useMessagingStateContext()
-	const { loggedInUser } = useUserStateContext()
+	const { messageDispatch, websocket, apnsDeviceToken } = useMessagingStateContext()
 
 	const initiateConnection = (): void => {
 		if (websocket !== null) {
-			websocket.close()
+			return
 		}
 
 		const localWebSocket = new WebSocket(Connections.websocketUrl)
+		localWebSocket.binaryType = 'blob'
 
 		localWebSocket.onopen = async (): Promise<void> => {
-			const token = await Storage.getItem('token')
-			localWebSocket.send(JSON.stringify({ type: 'verifyUser', token }))
+			console.log('Websocket connection established')
+			if (apnsDeviceToken === null && Connections.platform === 'native') {
+				console.error('Device token must be present before creating a websocket connection')
+				localWebSocket.close(
+					1008,
+					"device token is not present when trying to create a connection. Please restart the app and try again. If this doesn't work, file a bug report."
+				)
+			}
+			Storage.getItem('token').then((token) =>
+				localWebSocket.send(
+					JSON.stringify({
+						type: 'verifyUser',
+						token,
+						...(Connections.platform === 'native' && { deviceToken: apnsDeviceToken })
+					})
+				)
+			)
 		}
 
 		localWebSocket.onmessage = ({ data }) => {
 			const response = JSON.parse(data)
 			if (response.connected !== undefined) {
-				localWebSocket.send(JSON.stringify({ type: 'getAllConversations' }))
+				Storage.getItem('token').then((token) =>
+					localWebSocket.send(JSON.stringify({ type: 'getAllConversations', token }))
+				)
 			} else if (response.conversations !== undefined) {
 				messageDispatch({ type: 'setConversations', payload: response.conversations })
 			} else if (response.messages !== undefined) {
 				messageDispatch({ type: 'setMessages', payload: response.messages })
 			} else if (response.conversation !== undefined) {
-				messageDispatch({
-					type: 'addNewConversation',
-					payload: response.conversation
-				})
+				if (response.conversation.last_message !== '') {
+					Storage.getItem('token').then(
+						(token) =>
+							localWebSocket?.send(
+								JSON.stringify({
+									type: 'getConversation',
+									conversationId: response.conversation.conversation_id,
+									token
+								})
+							)
+					)
+				} else {
+					messageDispatch({
+						type: 'addNewConversation',
+						payload: response.conversation
+					})
+				}
 			} else if (response.message !== undefined) {
 				messageDispatch({ type: 'receiveMessage', payload: response.message })
 			}
 		}
 
-		localWebSocket.onclose = () => {
+		localWebSocket.onerror = (error) => {
+			console.log({ error })
+		}
+
+		localWebSocket.onclose = (event) => {
+			console.log({ event })
 			console.log('The web socket has been closed')
+			messageDispatch({ type: 'closeConnection' })
 		}
 
 		messageDispatch({ type: 'initiateConnection', payload: localWebSocket })
 	}
 
-	const checkIfConversationExists = (userIds: number[]): false | number => {
-		if (conversations === null) {
-			return false
-		}
-
-		// sort the userIds and turn the list into a string
-		const userIdString = userIds.sort((a, b) => a - b).join(',')
-
-		let matchingConversation: number = -1
-
-		// sort the userIds of each conversation and turn them into a string
-		const conversationIdMap = Object.values(conversations).map((conversation) => ({
-			id: conversation.conversation_id,
-			users: conversation.users
-				.map((user) => user.user_id)
-				.sort((a, b) => a - b)
-				.join(',')
-		}))
-
-		// see if any of the userIds in the conversations match the one provided
-		const conversationMatch = conversationIdMap.some((conversation) => {
-			const isMatch = userIdString === conversation.users
-
-			if (isMatch) {
-				matchingConversation = conversation.id
-				return true
-			}
-
-			return false
-		})
-
-		return conversationMatch ? matchingConversation : false
+	const setDeviceToken = ({ deviceToken }: { deviceToken: string }): void => {
+		return messageDispatch({ type: 'setDeviceToken', payload: deviceToken })
 	}
 
-	const addConversation = ({ userId, name }: { userId: number; name: string }): void => {
-		const conversationExists = checkIfConversationExists([userId, loggedInUser?.id as number])
+	const addConversation = ({ userId }: { userId: number }): void => {
+		Storage.getItem('token').then(
+			(token) =>
+				websocket?.send(JSON.stringify({ type: 'createNewConversation', userIds: [userId], token }))
+		)
+	}
 
-		if (conversationExists === false) {
-			websocket?.send(JSON.stringify({ type: 'createNewConversation', userIds: [userId], name }))
-		} else {
-			messageDispatch({ type: 'setCurrentConversation', payload: conversationExists })
+	const openConversationWithFriend = async ({ userId }: { userId: number }): Promise<void> => {
+		try {
+			const {
+				data: { conversation }
+			} = await fetcher(`${conversations.create.url}`, {
+				method: conversations.create.method,
+				body: {
+					user_ids: [userId]
+				}
+			})
+
+			messageDispatch({ type: 'addNewConversation', payload: conversation })
+			getConversation({ conversationId: conversation.conversation_id })
+		} catch (error) {
+			console.log(error)
 		}
 	}
 
 	const sendMessage = ({
 		messageBody,
-		conversationId
+		conversationId,
+		senderName
 	}: {
 		messageBody: string
 		conversationId: number
+		senderName: string
 	}): void => {
-		websocket?.send(JSON.stringify({ type: 'sendMessage', messageBody, conversationId }))
+		Storage.getItem('token').then(
+			(token) =>
+				websocket?.send(
+					JSON.stringify({ type: 'sendMessage', messageBody, conversationId, token, senderName })
+				)
+		)
 	}
 
 	const getConversation = ({ conversationId }: { conversationId: number }): void => {
 		// set the current conversation id and send a message to the websocket that we'd like all the messages
 		// for that conversation
 		messageDispatch({ type: 'setCurrentConversation', payload: conversationId })
-		websocket?.send(JSON.stringify({ type: 'getConversation', conversationId }))
+		Storage.getItem('token').then(
+			(token) => websocket?.send(JSON.stringify({ type: 'getConversation', conversationId, token }))
+		)
 	}
 
-	const closeConnection = (): void => {
-		websocket?.close(1000, 'Conversation window was closed')
+	const closeConnection = (reason: string): void => {
+		websocket?.close(1000, `Conversation window was closed: ${reason}`)
+		messageDispatch({ type: 'closeConnection' })
 	}
 
 	return {
 		initiateConnection,
 		addConversation,
 		getConversation,
+		openConversationWithFriend,
 		sendMessage,
-		closeConnection
+		closeConnection,
+		setDeviceToken
 	}
 }

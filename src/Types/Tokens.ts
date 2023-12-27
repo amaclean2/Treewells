@@ -5,6 +5,7 @@ type SetTokenState = {
 	payload: {
 		mapboxToken: string
 		mapboxStyleKey: string
+		githubIssueToken: string
 	}
 }
 
@@ -19,6 +20,7 @@ export type TokenState = {
 	mapboxToken: string | null
 	mapboxStyleKey: string | null
 	tokenError: string | null
+	githubIssueToken: string | null
 }
 
 export type TokenContext = TokenState & { tokenDispatch: Dispatch<TokenAction> }

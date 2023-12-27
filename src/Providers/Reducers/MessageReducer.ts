@@ -5,7 +5,9 @@ export const initialMessagingState: MessageState = {
 	messages: null,
 	currentConversationId: null,
 	websocket: null,
-	messageError: null
+	messageError: null,
+	newMessages: 0,
+	apnsDeviceToken: null
 }
 
 // used later in send and receive messages
@@ -15,6 +17,10 @@ export const messageReducer = (state: MessageState, action: MessageAction): Mess
 	switch (action.type) {
 		case 'initiateConnection':
 			return { ...state, websocket: action.payload }
+		case 'closeConnection':
+			return { ...state, websocket: null }
+		case 'setDeviceToken':
+			return { ...state, apnsDeviceToken: action.payload }
 		case 'setMessageError':
 			return { ...state, messageError: action.payload }
 		case 'setConversations':
@@ -29,7 +35,7 @@ export const messageReducer = (state: MessageState, action: MessageAction): Mess
 					[action.payload.conversation_id.toString()]: {
 						...action.payload,
 						unread: false,
-						last_message: ''
+						last_message: action.payload.last_message ?? ''
 					}
 				}
 			}
@@ -44,6 +50,7 @@ export const messageReducer = (state: MessageState, action: MessageAction): Mess
 			return {
 				...state,
 				currentConversationId: action.payload,
+				messages: [],
 				conversations: {
 					...state.conversations,
 					[action.payload]: {
@@ -91,7 +98,7 @@ export const messageReducer = (state: MessageState, action: MessageAction): Mess
 					}
 				}
 			}
-		case 'receiveMessage':
+		case 'receiveMessage': {
 			currentMessages = state.messages ?? []
 
 			if (state.conversations?.[action.payload.conversation_id] === undefined) {
@@ -104,7 +111,8 @@ export const messageReducer = (state: MessageState, action: MessageAction): Mess
 
 			return {
 				...state,
-				messages: [...currentMessages, action.payload],
+				messages: [action.payload].concat(state.messages ?? []),
+				newMessages: state.newMessages + 1,
 				conversations: {
 					...state.conversations,
 					[action.payload.conversation_id]: {
@@ -114,6 +122,7 @@ export const messageReducer = (state: MessageState, action: MessageAction): Mess
 					}
 				}
 			}
+		}
 		default:
 			return state
 	}

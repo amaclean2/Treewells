@@ -8,15 +8,19 @@ import type {
 	UserType
 } from '../../Types/User'
 import { fetcher } from '../../utils'
-import { completedAdventures } from '../Apis'
+import { adventures } from '../Apis'
 
 export const useSaveCompletedAdventure = (): {
 	saveCompletedAdventure: ({
 		adventureId,
-		adventureType
+		adventureType,
+		difficulty,
+		rating
 	}: {
 		adventureId: number
 		adventureType: AdventureChoiceType
+		difficulty: string
+		rating: string
 	}) => Promise<void>
 } => {
 	const { loggedInUser, userDispatch } = useUserStateContext()
@@ -25,21 +29,27 @@ export const useSaveCompletedAdventure = (): {
 
 	const saveCompletedAdventure = async ({
 		adventureId,
-		adventureType
+		adventureType,
+		rating,
+		difficulty
 	}: {
 		adventureId: number
 		adventureType: AdventureChoiceType
+		rating: string
+		difficulty: string
 	}): Promise<void> => {
 		try {
 			const {
 				data: {
 					completed: { user_completed_field }
 				}
-			} = await fetcher(completedAdventures.create.url, {
-				method: completedAdventures.create.method,
+			} = await fetcher(adventures.completeAdventure.url, {
+				method: adventures.completeAdventure.method,
 				body: {
 					adventure_id: adventureId,
-					public: false
+					public: true,
+					rating,
+					difficulty
 				}
 			})
 

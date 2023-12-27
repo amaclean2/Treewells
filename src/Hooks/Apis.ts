@@ -25,18 +25,14 @@ type AdventureObject = {
 	create: ApiObject
 	getAllAdventures: ApiObject
 	getAdventureDetails: ApiObject
+	getAdventuresByDistance: ApiObject
 	searchForAdventures: ApiObject
 	editAdventure: ApiObject
 	processAdventureCSV: ApiObject
 	builkImport: ApiObject
 	deleteAdventure: ApiObject
-}
-
-type TodoAdventureObject = {
-	create: ApiObject
-}
-type CompletedAdventureObject = {
-	create: ApiObject
+	createTodo: ApiObject
+	completeAdventure: ApiObject
 }
 
 type PicturesObject = {
@@ -44,6 +40,11 @@ type PicturesObject = {
 	delete: ApiObject
 	deleteProfilePicture: ApiObject
 	changeProfilePicture: ApiObject
+}
+
+type ConversationsObject = {
+	create: ApiObject
+	getConversations: ApiObject
 }
 
 export const users: UserObject = {
@@ -113,6 +114,10 @@ export const adventures: AdventureObject = {
 		url: '/adventures/details',
 		method: 'GET'
 	},
+	getAdventuresByDistance: {
+		url: '/adventures/distance',
+		method: 'GET'
+	},
 	searchForAdventures: {
 		url: '/adventures/search',
 		method: 'GET'
@@ -132,18 +137,13 @@ export const adventures: AdventureObject = {
 	deleteAdventure: {
 		url: '/adventures',
 		method: 'DELETE'
-	}
-}
-
-export const todoAdventures: TodoAdventureObject = {
-	create: {
-		url: '/todo_adventures',
+	},
+	createTodo: {
+		url: '/adventures/todo',
 		method: 'POST'
-	}
-}
-export const completedAdventures: CompletedAdventureObject = {
-	create: {
-		url: '/completed_adventures',
+	},
+	completeAdventure: {
+		url: '/adventures/complete',
 		method: 'POST'
 	}
 }
@@ -164,5 +164,16 @@ export const pictures: PicturesObject = {
 	deleteProfilePicture: {
 		url: '/pictures/deleteProfilePicture',
 		method: 'PUT'
+	}
+}
+
+export const conversations: ConversationsObject = {
+	getConversations: {
+		url: '/conversations',
+		method: 'GET'
+	},
+	create: {
+		url: '/conversations',
+		method: 'POST'
 	}
 }
