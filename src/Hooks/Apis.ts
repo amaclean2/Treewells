@@ -45,6 +45,7 @@ type PicturesObject = {
 type ConversationsObject = {
 	create: ApiObject
 	getConversations: ApiObject
+	addUserToConversation: ApiObject
 }
 
 export const users: UserObject = {
@@ -174,6 +175,10 @@ export const conversations: ConversationsObject = {
 	},
 	create: {
 		url: '/conversations',
+		method: 'POST'
+	},
+	addUserToConversation: {
+		url: '/conversations/addUser',
 		method: 'POST'
 	}
 }
