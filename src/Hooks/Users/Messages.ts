@@ -1,6 +1,6 @@
 import { Connections, Storage } from '../../config'
 import { useMessagingStateContext } from '../../Providers/MessageStateProvider'
-import { MessageType } from '../../Types/Messages'
+import { type MessageType } from '../../Types/Messages'
 import { fetcher } from '../../utils'
 import { conversations } from '../Apis'
 
@@ -17,7 +17,7 @@ type ResponseType = {
 export const useMessages = (): {
 	initiateConnection: () => void
 	setDeviceToken: ({ deviceToken }: { deviceToken: string }) => void
-	addConversation: ({ userId }: { userId: number }) => void
+	addConversation: ({ userId, userIds }: { userId?: number; userIds?: number[] }) => void
 	getConversation: ({ conversationId }: { conversationId: number }) => void
 	openConversationWithFriend: ({ userId }: { userId: number }) => Promise<void>
 	addUserToConversation: ({
@@ -129,10 +129,20 @@ export const useMessages = (): {
 		return messageDispatch({ type: 'setDeviceToken', payload: deviceToken })
 	}
 
-	const addConversation = ({ userId }: { userId: number }): void => {
+	const addConversation = ({ userId, userIds }: { userId?: number; userIds?: number[] }): void => {
+		if (userId === undefined && userIds === undefined) {
+			throw new Error('id or array of ids needs to be provided')
+		}
+
 		Storage.getItem('token').then(
 			(token) =>
-				websocket?.send(JSON.stringify({ type: 'createNewConversation', userIds: [userId], token }))
+				websocket?.send(
+					JSON.stringify({
+						type: 'createNewConversation',
+						userIds: userId !== undefined ? [userId] : userIds,
+						token
+					})
+				)
 		)
 	}
 
