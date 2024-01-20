@@ -236,6 +236,7 @@ type ToggleMatchPath = {
 export type PathCoordinates = [number, number]
 
 export type TrailPath = PathCoordinates[]
+export type ElevationCoordinates = number[]
 
 export type AdventureAction =
 	| SetAllAdventuresType

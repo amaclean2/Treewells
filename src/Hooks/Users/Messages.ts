@@ -134,12 +134,16 @@ export const useMessages = (): {
 			throw new Error('id or array of ids needs to be provided')
 		}
 
+		const submitUserIds = userIds ?? [userId]
+
+		console.log(submitUserIds)
+
 		Storage.getItem('token').then(
 			(token) =>
 				websocket?.send(
 					JSON.stringify({
 						type: 'createNewConversation',
-						userIds: userId !== undefined ? [userId] : userIds,
+						userIds: submitUserIds,
 						token
 					})
 				)

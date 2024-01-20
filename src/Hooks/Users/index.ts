@@ -11,6 +11,7 @@ export type EventChoiceTypes =
 	| ChangeEvent<HTMLInputElement>
 	| ChangeEvent<HTMLSelectElement>
 	| ChangeEvent<HTMLTextAreaElement>
+	| { target: { name: string; value: string } }
 
 export const useCreateUser = (): {
 	createNewUser: () => Promise<void>

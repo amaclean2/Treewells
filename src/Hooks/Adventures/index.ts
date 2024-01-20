@@ -1,5 +1,3 @@
-import * as turf from '@turf/turf'
-
 import { useAdventureStateContext } from '../../Providers/AdventureStateProvider'
 import { useCardStateContext } from '../../Providers/CardStateProvider'
 import type { AdventureChoiceType, AdventureType, TrailPath } from '../../Types/Adventures'
@@ -208,11 +206,10 @@ export const useSaveAdventure = (): {
 	togglePathEdit: () => void
 	toggleMatchPath: () => void
 	savePath: () => void
-	updatePath: (newPath: TrailPath) => void
+	updatePath: (newPath: TrailPath, elevations: number[]) => Promise<void>
 	deletePath: () => void
 } => {
-	const { adventureDispatch, currentAdventure, globalAdventureType, workingPath } =
-		useAdventureStateContext()
+	const { adventureDispatch, currentAdventure, globalAdventureType } = useAdventureStateContext()
 
 	const saveEditAdventure = useDebounce(
 		async ({ name, value }: { name: string; value: string | number }): Promise<void> => {
@@ -249,8 +246,6 @@ export const useSaveAdventure = (): {
 
 	const savePath = (): void => {
 		try {
-			saveEditAdventure({ name: 'path', value: workingPath })
-
 			togglePathEdit()
 		} catch (error) {
 			console.log('Error saving path', error)
@@ -262,20 +257,28 @@ export const useSaveAdventure = (): {
 		togglePathEdit()
 	}
 
-	const updatePath = (newPath: TrailPath): void => {
+	const updatePath = async (newPath: TrailPath, elevations: number[]): Promise<void> => {
 		adventureDispatch({ type: 'updateTrailPath', payload: newPath })
-
-		if (workingPath.length > 1) {
-			const turfLine = turf.lineString(workingPath)
-			const lineLength = Math.round(turf.length(turfLine) * 100) / 100
-
-			adventureDispatch({
-				type: 'editAdventure',
-				payload: { name: 'distance', value: lineLength.toString() }
-			})
-		} else {
-			adventureDispatch({ type: 'editAdventure', payload: { name: 'distance', value: '0' } })
-		}
+		const resp = await fetcher(adventures.editAdventure.url, {
+			method: adventures.editAdventure.method,
+			body: {
+				fields: [
+					{
+						name: 'path',
+						value: newPath,
+						adventure_id: currentAdventure?.id,
+						adventure_type: currentAdventure?.adventure_type
+					},
+					{
+						name: 'elevations',
+						value: elevations,
+						adventure_id: currentAdventure?.id,
+						adventure_type: currentAdventure?.adventure_type
+					}
+				]
+			}
+		})
+		console.log({ resp })
 	}
 
 	const togglePathEdit = (): void => {
