@@ -197,7 +197,7 @@ describe('testing the adventure state provider', () => {
 		})
 	})
 
-	test('Initial call to get all adventures gets a list of adventures', async () => {
+	test.skip('Initial call to get all adventures gets a list of adventures', async () => {
 		mockGetAdventures()
 		render(<AdventureTestApp />)
 

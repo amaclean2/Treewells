@@ -1,7 +1,7 @@
 import type { Dispatch } from 'react'
 import type { URLType } from './Cards'
 
-export type AdventureChoiceType = 'ski' | 'climb' | 'hike' | 'bike'
+export type AdventureChoiceType = 'ski' | 'climb' | 'hike' | 'bike' | 'skiApproach'
 
 type CompletedUserType = {
 	adventure_id: number
@@ -60,16 +60,25 @@ type BasicAdventureType = {
 }
 
 type SkiAdventureType = BasicAdventureType & {
-	distance?: number
 	aspect?: string
 	avg_angle?: number
 	max_angle?: number
 	base_elevation?: number
 	summit_elevaiton?: number
 	exposure?: number
-	gear?: string
 	season?: string
 	path?: TrailPath
+	elevations?: ElevationCoordinates
+	ski_approach_id?: number
+}
+
+type SkiApproachType = BasicAdventureType & {
+	distance?: number
+	summit_elevation?: number
+	base_elevation?: number
+	gear?: string
+	path?: TrailPath
+	elevations?: ElevationCoordinates
 }
 
 type ClimbAdventureType = BasicAdventureType & {
@@ -88,6 +97,7 @@ type HikeAdventureType = BasicAdventureType & {
 	distance?: number
 	season?: string
 	path?: TrailPath
+	elevations?: ElevationCoordinates
 }
 
 type BikeAdventureType = BasicAdventureType & {
@@ -98,6 +108,7 @@ type BikeAdventureType = BasicAdventureType & {
 	path?: TrailPath
 	climb?: number
 	descent?: number
+	elevations?: ElevationCoordinates
 }
 
 type CloseAdventureObject = {
@@ -111,6 +122,7 @@ type CloseAdventureObject = {
 
 export type AdventureType =
 	| SkiAdventureType
+	| SkiApproachType
 	| ClimbAdventureType
 	| HikeAdventureType
 	| BikeAdventureType
@@ -233,10 +245,19 @@ type ToggleMatchPath = {
 	type: 'toggleMatchPath'
 }
 
+type ClearTrailPath = {
+	type: 'clearTrailPath'
+}
+
+type MoveAdventureMarker = {
+	type: 'moveAdventureMarker'
+}
+
 export type PathCoordinates = [number, number]
+type ElevationCoordinate = [number, number]
 
 export type TrailPath = PathCoordinates[]
-export type ElevationCoordinates = number[]
+export type ElevationCoordinates = ElevationCoordinate[]
 
 export type AdventureAction =
 	| SetAllAdventuresType
@@ -261,6 +282,8 @@ export type AdventureAction =
 	| SetCloseAdventures
 	| SetAdventuresList
 	| ToggleMatchPath
+	| ClearTrailPath
+	| MoveAdventureMarker
 
 export type AdventureState = {
 	allAdventures: AdventureList | null

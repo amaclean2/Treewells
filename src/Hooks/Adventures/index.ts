@@ -84,6 +84,7 @@ export const useGetAdventures = (): {
 		} catch (error) {}
 	}
 
+	// get all the adventures within a distance range
 	const getAdventureList = async ({
 		type,
 		coordinates,
@@ -126,15 +127,22 @@ export const useGetAdventures = (): {
 		adventureDispatch({ type: 'startNewAdventureProcess', payload: type })
 	}
 
+	// get all the adventures of a type
 	const getAllAdventures = async ({ type }: { type: AdventureChoiceType }): Promise<void> => {
 		try {
+			const adventureType = type ?? globalAdventureType
 			const {
-				data: { adventures: responseAdventures }
-			} = await fetcher(`${adventures.getAllAdventures.url}?type=${type ?? globalAdventureType}`, {
-				method: adventures.getAllAdventures.method
-			})
+				data: { adventures: payload }
+			} = await fetcher(
+				`${adventures.getAllAdventures.url}?type=${
+					adventureType === 'skiApproach' ? 'ski' : adventureType
+				}`,
+				{
+					method: adventures.getAllAdventures.method
+				}
+			)
 
-			adventureDispatch({ type: 'setAllAdventures', payload: responseAdventures })
+			adventureDispatch({ type: 'setAllAdventures', payload })
 		} catch (error) {
 			adventureDispatch({ type: 'setAdventureError', payload: 'failed fetching adventures' })
 			throw error
@@ -207,7 +215,7 @@ export const useSaveAdventure = (): {
 	toggleMatchPath: () => void
 	savePath: () => void
 	updatePath: (newPath: TrailPath, elevations: number[]) => Promise<void>
-	deletePath: () => void
+	deletePath: () => Promise<void>
 } => {
 	const { adventureDispatch, currentAdventure, globalAdventureType } = useAdventureStateContext()
 
@@ -252,30 +260,29 @@ export const useSaveAdventure = (): {
 		}
 	}
 
-	const deletePath = (): void => {
-		saveEditAdventure({ name: 'path', value: [] })
-		togglePathEdit()
+	const deletePath = async (): Promise<void> => {
+		await fetcher(
+			`${adventures.deletePath.url}?adventure_id=${currentAdventure?.id as number}&adventure_type=${
+				currentAdventure?.adventure_type as string
+			}`,
+			{
+				method: adventures.deletePath.method
+			}
+		)
+		adventureDispatch({ type: 'clearTrailPath' })
 	}
 
 	const updatePath = async (newPath: TrailPath, elevations: number[]): Promise<void> => {
 		adventureDispatch({ type: 'updateTrailPath', payload: newPath })
-		const resp = await fetcher(adventures.editAdventure.url, {
-			method: adventures.editAdventure.method,
+		const resp = await fetcher(adventures.editAdventurePath.url, {
+			method: adventures.editAdventurePath.method,
 			body: {
-				fields: [
-					{
-						name: 'path',
-						value: newPath,
-						adventure_id: currentAdventure?.id,
-						adventure_type: currentAdventure?.adventure_type
-					},
-					{
-						name: 'elevations',
-						value: elevations,
-						adventure_id: currentAdventure?.id,
-						adventure_type: currentAdventure?.adventure_type
-					}
-				]
+				field: {
+					adventure_id: currentAdventure?.id,
+					adventure_type: currentAdventure?.adventure_type,
+					path: newPath,
+					elevations
+				}
 			}
 		})
 		console.log({ resp })

@@ -65,11 +65,19 @@ export const AdventureStateProvider = ({ children }: { children: ReactNode }): J
 		// this is a watcher that is looking for changes in the globalAdventureType.
 		// Any time it sees a change it'll refetch all the adventures
 		if (adventureState.globalAdventureType !== null) {
-			fetcher(`${adventures.getAllAdventures.url}?type=${adventureState.globalAdventureType}`, {
+			const adventureType =
+				adventureState.globalAdventureType === 'skiApproach'
+					? 'ski'
+					: adventureState.globalAdventureType
+
+			fetcher(`${adventures.getAllAdventures.url}?type=${adventureType}`, {
 				method: adventures.getAllAdventures.method
 			})
 				.then(({ data: { adventures: adventureListObject } }) => {
-					adventureDispatch({ type: 'setAllAdventures', payload: adventureListObject })
+					adventureDispatch({
+						type: 'setAllAdventures',
+						payload: adventureListObject
+					})
 				})
 				.catch(console.error)
 		}

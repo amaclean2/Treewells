@@ -1,5 +1,6 @@
 import { Connections, Storage } from '../../config'
 import { useMessagingStateContext } from '../../Providers/MessageStateProvider'
+import { useUserStateContext } from '../../Providers/UserStateProvider'
 import { type MessageType } from '../../Types/Messages'
 import { fetcher } from '../../utils'
 import { conversations } from '../Apis'
@@ -44,6 +45,7 @@ export const useMessages = (): {
 		apnsDeviceToken,
 		conversations: userConversations
 	} = useMessagingStateContext()
+	const { userDispatch } = useUserStateContext()
 
 	const initiateConnection = (): void => {
 		if (websocket !== null) {
@@ -74,7 +76,14 @@ export const useMessages = (): {
 		}
 
 		localWebSocket.onmessage = ({ data }) => {
-			const response: ResponseType = JSON.parse(data)
+			let response: ResponseType
+			try {
+				response = JSON.parse(data)
+			} catch (error) {
+				userDispatch({ type: 'logout' })
+				return console.error(error)
+			}
+
 			if (response.connected !== undefined) {
 				Storage.getItem('token').then((token) =>
 					localWebSocket.send(JSON.stringify({ type: 'getAllConversations', token }))
@@ -84,23 +93,17 @@ export const useMessages = (): {
 			} else if (response.messages !== undefined) {
 				messageDispatch({ type: 'setMessages', payload: response.messages })
 			} else if (response.conversation !== undefined) {
-				if (response.conversation.last_message !== '') {
-					Storage.getItem('token').then(
-						(token) =>
-							localWebSocket?.send(
-								JSON.stringify({
-									type: 'getConversation',
-									conversationId: response.conversation.conversation_id,
-									token
-								})
-							)
-					)
-				} else {
-					messageDispatch({
-						type: 'addNewConversation',
-						payload: response.conversation
-					})
-				}
+				// a new conversation was created or an old one was found
+				Storage.getItem('token').then(
+					(token) =>
+						localWebSocket?.send(
+							JSON.stringify({
+								type: 'getConversation',
+								conversationId: response.conversation.conversation_id,
+								token
+							})
+						)
+				)
 			} else if (response.message !== undefined) {
 				messageDispatch({ type: 'receiveMessage', payload: response.message })
 			} else if (response.userAdded !== undefined) {

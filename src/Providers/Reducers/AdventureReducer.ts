@@ -59,6 +59,11 @@ export const adventureReducer = (
 				currentAdventure: action.payload.currentAdventure,
 				adventureAddState: false
 			}
+		case 'moveAdventureMarker':
+			return {
+				...state,
+				adventureAddState: true
+			}
 		case 'setCurrentAdventure':
 			return { ...state, currentAdventure: action.payload }
 		case 'toggleMatchPath':
@@ -136,6 +141,16 @@ export const adventureReducer = (
 			return {
 				...state,
 				workingPath: action.payload ?? []
+			}
+		case 'clearTrailPath':
+			return {
+				...state,
+				currentAdventure: {
+					...(state.currentAdventure as AdventureType),
+					path: [],
+					elevations: []
+				},
+				workingPath: []
 			}
 		default:
 			return state

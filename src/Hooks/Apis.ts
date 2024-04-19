@@ -28,9 +28,11 @@ type AdventureObject = {
 	getAdventuresByDistance: ApiObject
 	searchForAdventures: ApiObject
 	editAdventure: ApiObject
+	editAdventurePath: ApiObject
 	processAdventureCSV: ApiObject
 	builkImport: ApiObject
 	deleteAdventure: ApiObject
+	deletePath: ApiObject
 	createTodo: ApiObject
 	completeAdventure: ApiObject
 }
@@ -127,6 +129,10 @@ export const adventures: AdventureObject = {
 		url: '/adventures',
 		method: 'PUT'
 	},
+	editAdventurePath: {
+		url: '/adventures/path',
+		method: 'PUT'
+	},
 	processAdventureCSV: {
 		url: '/adventures/processCsv',
 		method: 'POST'
@@ -137,6 +143,10 @@ export const adventures: AdventureObject = {
 	},
 	deleteAdventure: {
 		url: '/adventures',
+		method: 'DELETE'
+	},
+	deletePath: {
+		url: '/adventures/path',
 		method: 'DELETE'
 	},
 	createTodo: {
