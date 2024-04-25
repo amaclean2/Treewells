@@ -56,13 +56,12 @@ export const adventureReducer = (
 			return {
 				...state,
 				allAdventures: action.payload.adventures,
-				currentAdventure: action.payload.currentAdventure,
-				adventureAddState: false
+				currentAdventure: action.payload.currentAdventure
 			}
-		case 'moveAdventureMarker':
+		case 'toggleAdventureAddState':
 			return {
 				...state,
-				adventureAddState: true
+				adventureAddState: !state.adventureAddState
 			}
 		case 'setCurrentAdventure':
 			return { ...state, currentAdventure: action.payload }

@@ -249,8 +249,8 @@ type ClearTrailPath = {
 	type: 'clearTrailPath'
 }
 
-type MoveAdventureMarker = {
-	type: 'moveAdventureMarker'
+type ToggleAdventureAddState = {
+	type: 'toggleAdventureAddState'
 }
 
 export type PathCoordinates = [number, number]
@@ -283,7 +283,7 @@ export type AdventureAction =
 	| SetAdventuresList
 	| ToggleMatchPath
 	| ClearTrailPath
-	| MoveAdventureMarker
+	| ToggleAdventureAddState
 
 export type AdventureState = {
 	allAdventures: AdventureList | null

@@ -6,7 +6,8 @@ export const initialCardState: CardState = {
 	showAlert: false,
 	alertContent: '',
 	imageList: null,
-	screenType: getScreenType()
+	screenType: getScreenType(),
+	isMenuOpen: false
 }
 
 export const cardReducer = (state: CardState, action: CardAction): CardState => {
@@ -23,6 +24,8 @@ export const cardReducer = (state: CardState, action: CardAction): CardState => 
 			return { ...state, showAlert: true, alertContent: action.payload }
 		case 'closeAlert':
 			return { ...state, showAlert: false, alertContent: '' }
+		case 'setIsMenuOpen':
+			return { ...state, isMenuOpen: !state.isMenuOpen }
 		case 'setImageList':
 			return { ...state, imageList: action.payload.list, galleryImage: action.payload.index }
 		default:

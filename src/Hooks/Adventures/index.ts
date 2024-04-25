@@ -216,6 +216,7 @@ export const useSaveAdventure = (): {
 	savePath: () => void
 	updatePath: (newPath: TrailPath, elevations: number[]) => Promise<void>
 	deletePath: () => Promise<void>
+	moveMarker: () => void
 } => {
 	const { adventureDispatch, currentAdventure, globalAdventureType } = useAdventureStateContext()
 
@@ -258,6 +259,10 @@ export const useSaveAdventure = (): {
 		} catch (error) {
 			console.log('Error saving path', error)
 		}
+	}
+
+	const moveMarker = (): void => {
+		adventureDispatch({ type: 'toggleAdventureAddState' })
 	}
 
 	const deletePath = async (): Promise<void> => {
@@ -369,6 +374,7 @@ export const useSaveAdventure = (): {
 		savePath,
 		deletePath,
 		updatePath,
+		moveMarker,
 		toggleMatchPath
 	}
 }

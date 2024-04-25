@@ -30,13 +30,24 @@ type SetImageList = {
 	}
 }
 
-export type CardAction = CloseMessage | SetGalleryImage | OpenAlert | CloseAlert | SetImageList
+type SetIsMenuOpen = {
+	type: 'setIsMenuOpen'
+}
+
+export type CardAction =
+	| CloseMessage
+	| SetGalleryImage
+	| OpenAlert
+	| CloseAlert
+	| SetImageList
+	| SetIsMenuOpen
 
 export type CardState = {
 	galleryImage: number | null
 	showAlert: boolean
 	alertContent: string
 	imageList: URLType[] | null
+	isMenuOpen: boolean
 	screenType: {
 		mobile: boolean
 		tablet: boolean
