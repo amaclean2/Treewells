@@ -7,7 +7,8 @@ export const initialCardState: CardState = {
 	alertContent: '',
 	imageList: null,
 	screenType: getScreenType(),
-	isMenuOpen: false
+	isMenuOpen: false,
+	enableAddPath: false
 }
 
 export const cardReducer = (state: CardState, action: CardAction): CardState => {
@@ -25,9 +26,17 @@ export const cardReducer = (state: CardState, action: CardAction): CardState => 
 		case 'closeAlert':
 			return { ...state, showAlert: false, alertContent: '' }
 		case 'setIsMenuOpen':
-			return { ...state, isMenuOpen: !state.isMenuOpen }
+			return {
+				...state,
+				isMenuOpen: action.payload !== undefined ? action.payload : !state.isMenuOpen
+			}
 		case 'setImageList':
 			return { ...state, imageList: action.payload.list, galleryImage: action.payload.index }
+		case 'toggleAddPath':
+			return {
+				...state,
+				enableAddPath: action.payload !== undefined ? action.payload : !state.enableAddPath
+			}
 		default:
 			return state
 	}

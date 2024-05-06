@@ -11,7 +11,6 @@ const AdventureTestConsumer = (): JSX.Element => {
 		startPosition,
 		globalAdventureType,
 		adventureAddState,
-		adventureEditState,
 		adventureDispatch
 	} = useAdventureStateContext()
 
@@ -131,12 +130,6 @@ const AdventureTestConsumer = (): JSX.Element => {
 		})
 	}
 
-	const editAdventure = (): void => {
-		adventureDispatch({
-			type: 'switchIsAdventureEditable'
-		})
-	}
-
 	return (
 		<div>
 			<span>Proof of all the adventures: {allAdventures?.type}</span>
@@ -146,7 +139,6 @@ const AdventureTestConsumer = (): JSX.Element => {
 			<span>Start position view: {startPosition?.zoom}</span>
 			<span>Adventure type view: {globalAdventureType}</span>
 			<span>Adventure add state view: {adventureAddState.toString()}</span>
-			<span>Adventure edit state view: {adventureEditState.toString()}</span>
 
 			<button onClick={getAllAdventures}>Get All Adventures</button>
 			<button onClick={getCurrentAdventure}>Get Current Adventure</button>
@@ -158,7 +150,6 @@ const AdventureTestConsumer = (): JSX.Element => {
 			<button onClick={addNewAdventure}>Add New Adventure</button>
 			<button onClick={enableDoubleClick}>Enable Double Click</button>
 			<button onClick={closeAdventureView}>Close Adventure View</button>
-			<button onClick={editAdventure}>Change Adventure Edit State</button>
 
 			<input
 				data-testid={'adventure-edit'}

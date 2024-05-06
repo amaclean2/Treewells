@@ -108,6 +108,7 @@ type ClearFormType = {
 
 type IsUserEditableType = {
 	type: 'switchIsUserEditable'
+	payload?: boolean
 }
 
 type ChangeStatType = {

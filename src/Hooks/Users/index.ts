@@ -217,7 +217,7 @@ export const useEditUser = (): {
 	editUser: (event: EventChoiceTypes) => Promise<void>
 	editFormFields: (field: { name: FormFieldNameOptions; value: string | number | boolean }) => void
 	changeUserStatView: (newUserStatView: UserStatType) => void
-	toggleUserEditState: () => void
+	toggleUserEditState: (val?: boolean) => void
 	deleteUser: (confirmation: boolean) => Promise<void>
 } => {
 	const { userDispatch } = useUserStateContext()
@@ -255,8 +255,8 @@ export const useEditUser = (): {
 		userDispatch({ type: 'setFormFields', payload: field })
 	}
 
-	const toggleUserEditState = (): void => {
-		userDispatch({ type: 'switchIsUserEditable' })
+	const toggleUserEditState = (val?: boolean): void => {
+		userDispatch({ type: 'switchIsUserEditable', ...(val !== undefined && { payload: val }) })
 	}
 
 	const deleteUser = async (confirmation: boolean): Promise<void> => {

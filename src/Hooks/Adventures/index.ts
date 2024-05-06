@@ -1,6 +1,11 @@
 import { useAdventureStateContext } from '../../Providers/AdventureStateProvider'
 import { useCardStateContext } from '../../Providers/CardStateProvider'
-import type { AdventureChoiceType, AdventureType, TrailPath } from '../../Types/Adventures'
+import type {
+	AdventureChoiceType,
+	AdventureType,
+	ElevationCoordinates,
+	TrailPath
+} from '../../Types/Adventures'
 import { fetcher, useDebounce } from '../../utils'
 import { adventures } from '../Apis'
 import type { EventChoiceTypes } from '../Users'
@@ -30,6 +35,7 @@ export const useGetAdventures = (): {
 	processCsvAdventures: ({ csvString }: { csvString: string }) => Promise<AdventureType[]>
 } => {
 	const { globalAdventureType, adventureDispatch } = useAdventureStateContext()
+	const { updatePath } = useSaveAdventure()
 
 	const getAdventure = async ({
 		id,
@@ -49,9 +55,18 @@ export const useGetAdventures = (): {
 			})
 
 			adventureDispatch({ type: 'setCurrentAdventure', payload: adventure })
-
 			if (adventure.path !== undefined) {
-				adventureDispatch({ type: 'setTrailPath', payload: adventure.path })
+				const maxEl = Math.max(...adventure.elevations.map((el: [number, number]) => el[0]))
+				const minEl = Math.min(...adventure.elevations.map((el: [number, number]) => el[0]))
+				const adventurePoints =
+					adventure.points !== undefined && adventure.points.length > 0 ? adventure.points : []
+
+				updatePath({
+					path: adventure.path,
+					points: adventurePoints,
+					maxEl,
+					minEl
+				})
 			}
 		} catch (error) {
 			adventureDispatch({
@@ -211,14 +226,27 @@ export const useSaveAdventure = (): {
 		adventuresObject: AdventureType[]
 	}) => Promise<void>
 	setAdventureError: (adventureError: string) => void
-	togglePathEdit: () => void
-	toggleMatchPath: () => void
-	savePath: () => void
-	updatePath: (newPath: TrailPath, elevations: number[]) => Promise<void>
+	togglePathEdit: (val?: boolean) => void
+	toggleMatchPath: (val?: boolean) => void
+	savePath: () => Promise<void>
+	updatePath: ({
+		path,
+		elevations,
+		points,
+		minEl,
+		maxEl
+	}: {
+		path?: TrailPath
+		points?: TrailPath
+		elevations?: ElevationCoordinates
+		maxEl?: number
+		minEl?: number
+	}) => void
 	deletePath: () => Promise<void>
-	moveMarker: () => void
+	toggleAdventureAddState: (val?: boolean) => void
 } => {
-	const { adventureDispatch, currentAdventure, globalAdventureType } = useAdventureStateContext()
+	const { adventureDispatch, currentAdventure, globalAdventureType, workingPath } =
+		useAdventureStateContext()
 
 	const saveEditAdventure = useDebounce(
 		async ({ name, value }: { name: string; value: string | number }): Promise<void> => {
@@ -253,16 +281,25 @@ export const useSaveAdventure = (): {
 		})
 	}
 
-	const savePath = (): void => {
-		try {
-			togglePathEdit()
-		} catch (error) {
-			console.log('Error saving path', error)
-		}
+	const savePath = async (): Promise<void> => {
+		fetcher(adventures.editAdventurePath.url, {
+			method: adventures.editAdventurePath.method,
+			body: {
+				field: {
+					adventure_id: currentAdventure?.id,
+					adventure_type: currentAdventure?.adventure_type,
+					path: [...workingPath.path, [0], ...workingPath.points],
+					elevations: workingPath.elevations
+				}
+			}
+		})
 	}
 
-	const moveMarker = (): void => {
-		adventureDispatch({ type: 'toggleAdventureAddState' })
+	const toggleAdventureAddState = (val?: boolean): void => {
+		adventureDispatch({
+			type: 'toggleAdventureAddState',
+			...(val !== undefined && { payload: val })
+		})
 	}
 
 	const deletePath = async (): Promise<void> => {
@@ -277,28 +314,31 @@ export const useSaveAdventure = (): {
 		adventureDispatch({ type: 'clearTrailPath' })
 	}
 
-	const updatePath = async (newPath: TrailPath, elevations: number[]): Promise<void> => {
-		adventureDispatch({ type: 'updateTrailPath', payload: newPath })
-		const resp = await fetcher(adventures.editAdventurePath.url, {
-			method: adventures.editAdventurePath.method,
-			body: {
-				field: {
-					adventure_id: currentAdventure?.id,
-					adventure_type: currentAdventure?.adventure_type,
-					path: newPath,
-					elevations
-				}
-			}
+	const updatePath = ({
+		path,
+		points,
+		elevations,
+		maxEl,
+		minEl
+	}: {
+		path?: TrailPath
+		points?: TrailPath
+		elevations?: ElevationCoordinates
+		maxEl?: number
+		minEl?: number
+	}): void => {
+		adventureDispatch({
+			type: 'updateTrailPath',
+			payload: { path, points, elevations, maxEl, minEl }
 		})
-		console.log({ resp })
 	}
 
-	const togglePathEdit = (): void => {
-		adventureDispatch({ type: 'togglePathEdit' })
+	const togglePathEdit = (val?: boolean): void => {
+		adventureDispatch({ type: 'togglePathEdit', ...(val !== undefined && { payload: val }) })
 	}
 
-	const toggleMatchPath = (): void => {
-		adventureDispatch({ type: 'toggleMatchPath' })
+	const toggleMatchPath = (val?: boolean): void => {
+		adventureDispatch({ type: 'toggleMatchPath', ...(val !== undefined && { payload: val }) })
 	}
 
 	const createNewDefaultAdventure = async ({
@@ -374,7 +414,7 @@ export const useSaveAdventure = (): {
 		savePath,
 		deletePath,
 		updatePath,
-		moveMarker,
+		toggleAdventureAddState,
 		toggleMatchPath
 	}
 }
@@ -423,7 +463,7 @@ export const useDeleteAdventure = (): {
 	}
 
 	const toggleDeletePage = (): void => {
-		adventureDispatch({ type: 'switchIsDeletePageOpen' })
+		adventureDispatch({ type: 'toggleIsDeletePageOpen' })
 	}
 
 	return { deleteAdventure, toggleDeletePage }

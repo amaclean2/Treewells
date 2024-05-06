@@ -32,6 +32,12 @@ type SetImageList = {
 
 type SetIsMenuOpen = {
 	type: 'setIsMenuOpen'
+	payload?: boolean
+}
+
+type ToggleAddPath = {
+	type: 'toggleAddPath'
+	payload?: boolean
 }
 
 export type CardAction =
@@ -41,6 +47,7 @@ export type CardAction =
 	| CloseAlert
 	| SetImageList
 	| SetIsMenuOpen
+	| ToggleAddPath
 
 export type CardState = {
 	galleryImage: number | null
@@ -48,6 +55,7 @@ export type CardState = {
 	alertContent: string
 	imageList: URLType[] | null
 	isMenuOpen: boolean
+	enableAddPath: boolean
 	screenType: {
 		mobile: boolean
 		tablet: boolean

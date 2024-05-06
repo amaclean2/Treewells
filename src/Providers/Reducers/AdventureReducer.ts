@@ -3,19 +3,18 @@ import type { AdventureAction, AdventureState, AdventureType } from '../../Types
 import type { URLType } from '../../Types/Cards'
 
 export const initialAdventureState = {
-	allAdventures: null,
-	closeAdventures: null,
-	adventuresList: null,
-	adventureAddState: false,
-	currentAdventure: null,
-	adventureEditState: false,
-	adventureError: null,
-	startPosition: null,
-	isDeletePageOpen: false,
-	globalAdventureType: null,
-	isPathEditOn: false,
-	workingPath: [],
-	matchPath: true
+	allAdventures: null, // all the adventures in a geoJSON object that gets fed to the map
+	closeAdventures: null, // a list of the close adventures to the current point
+	adventuresList: null, // I'm not sure...
+	adventureAddState: false, // a boolean that tells the map when a marker is being added
+	currentAdventure: null, // the adventure currently being drawn
+	adventureError: null, // Any error when creating or editing an adventure
+	startPosition: null, // The initial position when loading the map
+	isDeletePageOpen: false, // A boolean that controls the delete modal (should probably be in cards)
+	globalAdventureType: null, // The adventure type selected in the app
+	isPathEditOn: false, // a boolean that tells the map when a path is being drawn
+	workingPath: { path: [], elevations: [], maxEl: 0, minEl: 0, points: [] }, // the path being edited
+	matchPath: false // a check to see if the saved path should match any roads
 }
 
 export const adventureReducer = (
@@ -56,25 +55,33 @@ export const adventureReducer = (
 			return {
 				...state,
 				allAdventures: action.payload.adventures,
-				currentAdventure: action.payload.currentAdventure
+				currentAdventure: action.payload.currentAdventure,
+				adventureAddState: false
 			}
 		case 'toggleAdventureAddState':
 			return {
 				...state,
-				adventureAddState: !state.adventureAddState
+				adventureAddState: action.payload !== undefined ? action.payload : !state.adventureAddState
+			}
+		case 'togglePathEdit':
+			return {
+				...state,
+				isPathEditOn: action.payload !== undefined ? action.payload : !state.isPathEditOn
 			}
 		case 'setCurrentAdventure':
 			return { ...state, currentAdventure: action.payload }
 		case 'toggleMatchPath':
-			return { ...state, matchPath: !state.matchPath }
+			return {
+				...state,
+				matchPath: action.payload !== undefined ? action.payload : !state.matchPath
+			}
 		case 'closeAdventureView':
 			return {
 				...state,
 				adventureAddState: false,
 				currentAdventure: null,
-				adventureEditState: false,
 				isDeletePageOpen: false,
-				workingPath: []
+				workingPath: { path: [], elevations: [], points: [], maxEl: 0, minEl: 0 }
 			}
 		case 'editAdventure':
 			return {
@@ -97,12 +104,13 @@ export const adventureReducer = (
 				globalAdventureType: action.payload,
 				adventureAddState: true
 			}
-		case 'switchIsAdventureEditable':
-			return { ...state, adventureEditState: !state.adventureEditState }
 		case 'setAdventureError':
 			return { ...state, adventureError: action.payload }
-		case 'switchIsDeletePageOpen':
-			return { ...state, isDeletePageOpen: !state.isDeletePageOpen }
+		case 'toggleIsDeletePageOpen':
+			return {
+				...state,
+				isDeletePageOpen: action.payload !== undefined ? action.payload : !state.isDeletePageOpen
+			}
 		case 'deleteAdventure':
 			return { ...state, isDeletePageOpen: !state.isDeletePageOpen, currentAdventure: null }
 		case 'setGlobalAdventureType':
@@ -126,20 +134,13 @@ export const adventureReducer = (
 					)
 				}
 			}
-		case 'togglePathEdit':
-			return {
-				...state,
-				isPathEditOn: !state.isPathEditOn
-			}
 		case 'updateTrailPath':
 			return {
 				...state,
-				workingPath: action.payload
-			}
-		case 'setTrailPath':
-			return {
-				...state,
-				workingPath: action.payload ?? []
+				workingPath: {
+					...state.workingPath,
+					...action.payload
+				}
 			}
 		case 'clearTrailPath':
 			return {
@@ -147,9 +148,10 @@ export const adventureReducer = (
 				currentAdventure: {
 					...(state.currentAdventure as AdventureType),
 					path: [],
-					elevations: []
+					elevations: [],
+					points: []
 				},
-				workingPath: []
+				workingPath: { path: [], elevations: [], points: [], maxEl: 0, minEl: 0 }
 			}
 		default:
 			return state

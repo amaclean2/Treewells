@@ -12,7 +12,8 @@ export const useManipulateFlows = (): {
 	setImageList: (imageList: URLType[], index: number) => void
 	closeImageList: () => void
 	closeAdventureView: () => void
-	toggleMenuOpen: () => void
+	toggleMenuOpen: (val?: boolean) => void
+	toggleEnableAddPath: (val?: boolean) => void
 } => {
 	const { cardDispatch } = useCardStateContext()
 	const { adventureDispatch } = useAdventureStateContext()
@@ -49,8 +50,12 @@ export const useManipulateFlows = (): {
 		adventureDispatch({ type: 'closeAdventureView' })
 	}
 
-	const toggleMenuOpen = (): void => {
-		cardDispatch({ type: 'setIsMenuOpen' })
+	const toggleMenuOpen = (val?: boolean): void => {
+		cardDispatch({ type: 'setIsMenuOpen', ...(val !== undefined && { payload: val }) })
+	}
+
+	const toggleEnableAddPath = (val?: boolean): void => {
+		cardDispatch({ type: 'toggleAddPath', ...(val !== undefined && { payload: val }) })
 	}
 
 	return {
@@ -62,6 +67,7 @@ export const useManipulateFlows = (): {
 		setImageList,
 		closeImageList,
 		closeAdventureView,
-		toggleMenuOpen
+		toggleMenuOpen,
+		toggleEnableAddPath
 	}
 }

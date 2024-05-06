@@ -252,21 +252,6 @@ describe('testing the adventure state provider', () => {
 		)
 	})
 
-	test('Adventure edit toggle switches states', async () => {
-		await renderApp()
-
-		expect(screen.getByText(/Adventure edit state view/i).textContent).toBe(
-			'Adventure edit state view: false'
-		)
-
-		const toggleEditButton = screen.getByText(/Change Adventure Edit State/i)
-		fireEvent.click(toggleEditButton)
-
-		expect(screen.getByText(/Adventure edit state view/i).textContent).toBe(
-			'Adventure edit state view: true'
-		)
-	})
-
 	test(`closing the adventure view disables the add state,
 		sets the current adventure to null, and disables the edit state`, async () => {
 		await renderApp()
@@ -274,8 +259,6 @@ describe('testing the adventure state provider', () => {
 		const enableMapButton = screen.getByText(/Enable Double Click/i)
 		const closeAdventureButton = screen.getByText(/Close Adventure View/i)
 		const currentAdventureButton = screen.getByText(/Get Current Adventure/i)
-		const toggleEditButton = screen.getByText(/Change Adventure Edit State/i)
-		fireEvent.click(toggleEditButton)
 		fireEvent.click(enableMapButton)
 		fireEvent.click(currentAdventureButton)
 
@@ -285,9 +268,6 @@ describe('testing the adventure state provider', () => {
 		expect(screen.getByText(/Proof of a current adventure/i).textContent).toBe(
 			'Proof of a current adventure: New Adventure'
 		)
-		expect(screen.getByText(/Adventure edit state view/i).textContent).toBe(
-			'Adventure edit state view: true'
-		)
 
 		fireEvent.click(closeAdventureButton)
 
@@ -296,9 +276,6 @@ describe('testing the adventure state provider', () => {
 		)
 		expect(screen.getByText(/Proof of a current adventure/i).textContent).toBe(
 			'Proof of a current adventure: '
-		)
-		expect(screen.getByText(/Adventure edit state view/i).textContent).toBe(
-			'Adventure edit state view: false'
 		)
 	})
 })
