@@ -188,7 +188,7 @@ describe('testing the adventure state provider', () => {
 		fireEvent.click(newAdventureButton)
 
 		expect(screen.getByText(/Adventure add state view/i).textContent).toBe(
-			'Adventure add state view: true'
+			'Adventure add state view: adventure'
 		)
 		expect(screen.getByText(/Adventure type view/i).textContent).toBe('Adventure type view: hike')
 
@@ -248,7 +248,7 @@ describe('testing the adventure state provider', () => {
 		fireEvent.click(enableMapButton)
 
 		expect(screen.getByText(/Adventure add state view/i).textContent).toBe(
-			'Adventure add state view: true'
+			'Adventure add state view: adventure'
 		)
 	})
 
@@ -263,7 +263,7 @@ describe('testing the adventure state provider', () => {
 		fireEvent.click(currentAdventureButton)
 
 		expect(screen.getByText(/Adventure add state view/i).textContent).toBe(
-			'Adventure add state view: true'
+			'Adventure add state view: adventure'
 		)
 		expect(screen.getByText(/Proof of a current adventure/i).textContent).toBe(
 			'Proof of a current adventure: New Adventure'

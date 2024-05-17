@@ -77,7 +77,7 @@ const AdventureTestConsumer = (): JSX.Element => {
 	const startNewAdventure = (): void => {
 		adventureDispatch({
 			type: 'startNewAdventureProcess',
-			payload: 'hike'
+			payload: { type: 'hike', isZone: false }
 		})
 	}
 
@@ -120,7 +120,7 @@ const AdventureTestConsumer = (): JSX.Element => {
 	const enableDoubleClick = (): void => {
 		adventureDispatch({
 			type: 'startNewAdventureProcess',
-			payload: 'ski'
+			payload: { type: 'ski', isZone: false }
 		})
 	}
 

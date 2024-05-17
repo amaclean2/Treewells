@@ -31,7 +31,13 @@ export const useGetAdventures = (): {
 	}) => Promise<void>
 	searchAdventures: ({ searchQuery }: { searchQuery: string }) => Promise<any>
 	changeAdventureType: ({ type }: { type: AdventureChoiceType }) => void
-	enableNewAdventureClick: ({ type }: { type: AdventureChoiceType }) => void
+	enableNewAdventureClick: ({
+		type,
+		isZone
+	}: {
+		type: AdventureChoiceType
+		isZone: boolean
+	}) => void
 	processCsvAdventures: ({ csvString }: { csvString: string }) => Promise<AdventureType[]>
 } => {
 	const { globalAdventureType, adventureDispatch } = useAdventureStateContext()
@@ -56,14 +62,19 @@ export const useGetAdventures = (): {
 
 			adventureDispatch({ type: 'setCurrentAdventure', payload: adventure })
 			if (adventure.path !== undefined) {
-				const maxEl = Math.max(...adventure.elevations.map((el: [number, number]) => el[0]))
-				const minEl = Math.min(...adventure.elevations.map((el: [number, number]) => el[0]))
+				const maxEl = Number(
+					Math.max(...adventure.elevations?.map((el: [number, number]) => el[0])).toFixed(0)
+				)
+				const minEl = Number(
+					Math.min(...adventure.elevations.map((el: [number, number]) => el[0])).toFixed(0)
+				)
 				const adventurePoints =
 					adventure.points !== undefined && adventure.points.length > 0 ? adventure.points : []
 
 				updatePath({
 					path: adventure.path,
 					points: adventurePoints,
+					elevations: adventure.elevations,
 					maxEl,
 					minEl
 				})
@@ -121,25 +132,20 @@ export const useGetAdventures = (): {
 		} catch (error) {}
 	}
 
-	// const shareAdventure = ({ id }: { id: number }) => {
-	// 	const url = window.location.href
-	// 	const domain = url.includes('/adventure')
-	// 		? url.split('/adventure')[0]
-	// 		: url.split('/discover')[0]
-
-	// 	const newDomain = `${domain}/adventure/${id}`
-	// 	navigator.clipboard.writeText(newDomain)
-	// 	cardDispatch({ type: 'openAlert', payload: 'Your adventure has been copied to the clipboard' })
-	// }
-
 	const changeAdventureType = ({ type }: { type: AdventureChoiceType }): void => {
 		adventureDispatch({ type: 'setGlobalAdventureType', payload: type })
 		// I'm replacing getAllAdventures here with a watcher in adventureStateContext
 		// that calls getAllAdventures anytime the globalAdventureState changes
 	}
 
-	const enableNewAdventureClick = ({ type }: { type: AdventureChoiceType }): void => {
-		adventureDispatch({ type: 'startNewAdventureProcess', payload: type })
+	const enableNewAdventureClick = ({
+		type,
+		isZone
+	}: {
+		type: AdventureChoiceType
+		isZone: boolean
+	}): void => {
+		adventureDispatch({ type: 'startNewAdventureProcess', payload: { type, isZone } })
 	}
 
 	// get all the adventures of a type
@@ -212,7 +218,8 @@ export const useGetAdventures = (): {
 }
 
 export const useSaveAdventure = (): {
-	editAdventure: (event: EventChoiceTypes) => void
+	editAdventure: (event: EventChoiceTypes) => Promise<void>
+	editCoordinates: (coordinates: { lat: number; lng: number }) => Promise<void>
 	createNewDefaultAdventure: ({
 		longitude,
 		latitude
@@ -243,7 +250,7 @@ export const useSaveAdventure = (): {
 		minEl?: number
 	}) => void
 	deletePath: () => Promise<void>
-	toggleAdventureAddState: (val?: boolean) => void
+	toggleAdventureAddState: (val: false | 'adventure' | 'zone') => void
 } => {
 	const { adventureDispatch, currentAdventure, globalAdventureType, workingPath } =
 		useAdventureStateContext()
@@ -269,9 +276,34 @@ export const useSaveAdventure = (): {
 		}
 	)
 
-	const editAdventure = (event: EventChoiceTypes): void => {
+	const editCoordinates = async (coordinates: { lat: number; lng: number }): Promise<void> => {
+		adventureDispatch({
+			type: 'editAdventure',
+			payload: {
+				name: 'coordiantes',
+				value: JSON.stringify([coordinates.lng, coordinates.lat])
+			}
+		})
+
+		const {
+			data: { all_adventures: payload }
+		} = await fetcher(adventures.editAdventure.url, {
+			method: adventures.editAdventure.method,
+			body: {
+				field: {
+					name: 'coordinates',
+					value: [coordinates.lng, coordinates.lat],
+					adventure_id: currentAdventure?.id,
+					adventure_type: currentAdventure?.adventure_type
+				}
+			}
+		})
+
+		adventureDispatch({ type: 'setAllAdventures', payload })
+	}
+
+	const editAdventure = async (event: EventChoiceTypes): Promise<void> => {
 		// event is the adventure value
-		saveEditAdventure({ name: event.target.name, value: event.target.value })
 		adventureDispatch({
 			type: 'editAdventure',
 			payload: {
@@ -279,10 +311,12 @@ export const useSaveAdventure = (): {
 				value: event.target.value
 			}
 		})
+
+		await saveEditAdventure({ name: event.target.name, value: event.target.value })
 	}
 
 	const savePath = async (): Promise<void> => {
-		fetcher(adventures.editAdventurePath.url, {
+		await fetcher(adventures.editAdventurePath.url, {
 			method: adventures.editAdventurePath.method,
 			body: {
 				field: {
@@ -295,10 +329,10 @@ export const useSaveAdventure = (): {
 		})
 	}
 
-	const toggleAdventureAddState = (val?: boolean): void => {
+	const toggleAdventureAddState = (val: false | 'adventure' | 'zone'): void => {
 		adventureDispatch({
 			type: 'toggleAdventureAddState',
-			...(val !== undefined && { payload: val })
+			payload: val
 		})
 	}
 
@@ -326,12 +360,11 @@ export const useSaveAdventure = (): {
 		elevations?: ElevationCoordinates
 		maxEl?: number
 		minEl?: number
-	}): void => {
+	}): void =>
 		adventureDispatch({
 			type: 'updateTrailPath',
 			payload: { path, points, elevations, maxEl, minEl }
 		})
-	}
 
 	const togglePathEdit = (val?: boolean): void => {
 		adventureDispatch({ type: 'togglePathEdit', ...(val !== undefined && { payload: val }) })
@@ -407,6 +440,7 @@ export const useSaveAdventure = (): {
 
 	return {
 		editAdventure,
+		editCoordinates,
 		createNewDefaultAdventure,
 		insertBulkAdventures,
 		setAdventureError,

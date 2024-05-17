@@ -2,11 +2,11 @@ import { Storage } from '../../config'
 import type { AdventureAction, AdventureState, AdventureType } from '../../Types/Adventures'
 import type { URLType } from '../../Types/Cards'
 
-export const initialAdventureState = {
+export const initialAdventureState: AdventureState = {
 	allAdventures: null, // all the adventures in a geoJSON object that gets fed to the map
 	closeAdventures: null, // a list of the close adventures to the current point
 	adventuresList: null, // I'm not sure...
-	adventureAddState: false, // a boolean that tells the map when a marker is being added
+	adventureAddState: false, // a false zone or adventure value that tells the map when a marker or zone is being added
 	currentAdventure: null, // the adventure currently being drawn
 	adventureError: null, // Any error when creating or editing an adventure
 	startPosition: null, // The initial position when loading the map
@@ -61,7 +61,7 @@ export const adventureReducer = (
 		case 'toggleAdventureAddState':
 			return {
 				...state,
-				adventureAddState: action.payload !== undefined ? action.payload : !state.adventureAddState
+				adventureAddState: action.payload
 			}
 		case 'togglePathEdit':
 			return {
@@ -98,11 +98,11 @@ export const adventureReducer = (
 		 * adventureAddState to be changed
 		 */
 		case 'startNewAdventureProcess':
-			Storage.setItem('globalAdventureType', action.payload)
+			Storage.setItem('globalAdventureType', action.payload.type)
 			return {
 				...state,
-				globalAdventureType: action.payload,
-				adventureAddState: true
+				globalAdventureType: action.payload.type,
+				adventureAddState: action.payload.isZone ? 'zone' : 'adventure'
 			}
 		case 'setAdventureError':
 			return { ...state, adventureError: action.payload }

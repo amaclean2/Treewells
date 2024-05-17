@@ -203,7 +203,7 @@ type SetInitialValues = {
 
 type NewAdventureProcess = {
 	type: 'startNewAdventureProcess'
-	payload: AdventureChoiceType
+	payload: { type: AdventureChoiceType; isZone: boolean }
 }
 
 type UpdateAdventureImages = {
@@ -253,7 +253,7 @@ type ClearTrailPath = {
 
 type ToggleAdventureAddState = {
 	type: 'toggleAdventureAddState'
-	payload?: boolean
+	payload: false | 'zone' | 'adventure'
 }
 
 export type AdventureAction =
@@ -284,7 +284,7 @@ export type AdventureState = {
 	allAdventures: AdventureList | null
 	closeAdventures: CloseAdventureObject[] | null
 	adventuresList: CloseAdventureObject[] | null
-	adventureAddState: boolean
+	adventureAddState: false | 'zone' | 'adventure'
 	currentAdventure: AdventureType | null
 	adventureError: null | string
 	isPathEditOn: boolean
