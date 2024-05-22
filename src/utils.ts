@@ -131,7 +131,15 @@ export const gradeConverter = (grade: string, climbType: string): string | undef
 	return showClimbGrades(climbType).find(({ value }) => value === grade.split(':')[0])?.label
 }
 
-export const fetcher = async (url: string, options?: OptionsType): Promise<any> => {
+export const fetcher = async (
+	url: string,
+	options?: OptionsType,
+	useDummyData?: Record<string, unknown>
+): Promise<any> => {
+	if (useDummyData !== undefined) {
+		return { data: useDummyData }
+	}
+
 	const token = (await Storage.getItem('token')) as string
 	const headers = new Headers()
 

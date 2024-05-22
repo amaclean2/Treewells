@@ -4,7 +4,8 @@ import type {
 	AdventureChoiceType,
 	AdventureType,
 	ElevationCoordinates,
-	TrailPath
+	TrailPath,
+	ZoneType
 } from '../../Types/Adventures'
 import { fetcher, useDebounce } from '../../utils'
 import { adventures } from '../Apis'
@@ -100,9 +101,9 @@ export const useGetAdventures = (): {
 			const {
 				data: { adventures: closeAdventures }
 			} = await fetcher(
-				`${adventures.getAdventuresByDistance.url}?adventure_type=${type}&coordinates_lat=${
-					coordinates.lat
-				}&coordinates_lng=${coordinates.lng}&count=${10}`,
+				`${adventures.getAdventuresByDistance.url}?adventure_type=${
+					type ?? globalAdventureType
+				}&coordinates_lat=${coordinates.lat}&coordinates_lng=${coordinates.lng}&count=${10}`,
 				{ method: adventures.getAdventuresByDistance.method }
 			)
 
@@ -227,6 +228,13 @@ export const useSaveAdventure = (): {
 		longitude: number
 		latitude: number
 	}) => Promise<AdventureType>
+	createNewDefaultZone: ({
+		longitude,
+		latitude
+	}: {
+		longitude: number
+		latitude: number
+	}) => Promise<ZoneType>
 	insertBulkAdventures: ({
 		adventuresObject
 	}: {
@@ -414,7 +422,45 @@ export const useSaveAdventure = (): {
 			return adventure
 		} catch (error) {
 			adventureDispatch({ type: 'setAdventureError', payload: 'could not create a new adventure' })
-			throw error
+			return {} as AdventureType
+		}
+	}
+
+	const createNewDefaultZone = async ({
+		longitude,
+		latitude
+	}: {
+		longitude: number
+		latitude: number
+	}): Promise<ZoneType> => {
+		const newDefaultZone: ZoneType = {
+			adventure_type: globalAdventureType as AdventureChoiceType,
+			zone_name: 'New Zone',
+			public: true,
+			nearest_city: 'New City',
+			coordinates: {
+				lng: longitude,
+				lat: latitude
+			}
+		}
+
+		try {
+			const { data } = await fetcher(
+				adventures.create.url,
+				{
+					method: adventures.create.method,
+					body: newDefaultZone
+				},
+				{ zone: { ...newDefaultZone, id: 1000 }, all_zones: [{ ...newDefaultZone, id: 1000 }] }
+			)
+
+			const { zone, all_zones } = data
+			console.log({ zone, all_zones })
+
+			return zone
+		} catch (error) {
+			adventureDispatch({ type: 'setAdventureError', payload: 'could not create a new zone' })
+			return {} as ZoneType
 		}
 	}
 
@@ -442,6 +488,7 @@ export const useSaveAdventure = (): {
 		editAdventure,
 		editCoordinates,
 		createNewDefaultAdventure,
+		createNewDefaultZone,
 		insertBulkAdventures,
 		setAdventureError,
 		togglePathEdit,

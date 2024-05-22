@@ -5,7 +5,6 @@ import type { URLType } from '../../Types/Cards'
 export const initialAdventureState: AdventureState = {
 	allAdventures: null, // all the adventures in a geoJSON object that gets fed to the map
 	closeAdventures: null, // a list of the close adventures to the current point
-	adventuresList: null, // I'm not sure...
 	adventureAddState: false, // a false zone or adventure value that tells the map when a marker or zone is being added
 	currentAdventure: null, // the adventure currently being drawn
 	adventureError: null, // Any error when creating or editing an adventure
@@ -33,12 +32,6 @@ export const adventureReducer = (
 			return {
 				...state,
 				closeAdventures: action.payload
-			}
-		case 'setAdventuresList':
-			// the list of adventures to show near the user in the app
-			return {
-				...state,
-				adventuresList: action.payload
 			}
 		case 'updateStartPosition':
 			Storage.setItem('startPos', JSON.stringify(action.payload))

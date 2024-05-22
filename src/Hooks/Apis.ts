@@ -37,6 +37,17 @@ type AdventureObject = {
 	completeAdventure: ApiObject
 }
 
+type ZoneObject = {
+	create: ApiObject
+	getAllZones: ApiObject
+	getZoneDetails: ApiObject
+	getZonesByDistance: ApiObject
+	editZone: ApiObject
+	addChild: ApiObject
+	removeChild: ApiObject
+	deleteZone: ApiObject
+}
+
 type PicturesObject = {
 	upload: ApiObject
 	delete: ApiObject
@@ -101,6 +112,41 @@ export const tokens: TokenObject = {
 	getInitialCall: {
 		url: '/services/initial',
 		method: 'GET'
+	}
+}
+
+export const zones: ZoneObject = {
+	create: {
+		url: '/zones',
+		method: 'POST'
+	},
+	getAllZones: {
+		url: '/zones/all',
+		method: 'GET'
+	},
+	getZoneDetails: {
+		url: '/zones/details',
+		method: 'GET'
+	},
+	getZonesByDistance: {
+		url: '/zones/distance',
+		method: 'GET'
+	},
+	editZone: {
+		url: '/zones',
+		method: 'PUT'
+	},
+	addChild: {
+		url: '/zones/child',
+		method: 'POST'
+	},
+	removeChild: {
+		url: '/zones/child',
+		method: 'DELETE'
+	},
+	deleteZone: {
+		url: '/zones',
+		method: 'DELETE'
 	}
 }
 

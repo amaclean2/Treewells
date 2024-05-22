@@ -59,6 +59,24 @@ type BasicAdventureType = {
 	rating?: string
 }
 
+export type ZoneType = {
+	adventure_type: AdventureChoiceType
+	zone_name: string
+	bio?: string
+	creator_email?: string
+	creator_id?: number
+	creator_name?: string
+	date_created?: string
+	id?: number
+	images?: string[]
+	nearest_city: string
+	public: boolean
+	coordinates: {
+		lat: number
+		lng: number
+	}
+}
+
 type PathAdventureType = {
 	points?: TrailPath
 	path?: TrailPath
@@ -283,7 +301,6 @@ export type AdventureAction =
 export type AdventureState = {
 	allAdventures: AdventureList | null
 	closeAdventures: CloseAdventureObject[] | null
-	adventuresList: CloseAdventureObject[] | null
 	adventureAddState: false | 'zone' | 'adventure'
 	currentAdventure: AdventureType | null
 	adventureError: null | string
