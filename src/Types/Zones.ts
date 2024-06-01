@@ -1,5 +1,5 @@
 import type { Dispatch } from 'react'
-import type { AdventureChoiceType, AdventureType } from './Adventures'
+import type { AdventureChoiceType, AdventureType, BreadcrumbElement } from './Adventures'
 
 export type ZoneState = {
 	allZones: ZoneGeoJSONObj | null
@@ -19,9 +19,16 @@ type ZoneGeoJSONFeature = {
 	geometry: ZoneGeoJSONGeometry
 }
 
-type ZoneGeoJSONObj = {
+export type ZoneGeoJSONObj = {
 	type: 'FeatureCollection'
 	features: ZoneGeoJSONFeature[]
+}
+
+export type ZoneSearchElement = {
+	zone_id: number
+	zone_name: string
+	adventure_type: AdventureChoiceType
+	nearest_city: string
 }
 
 type SetAllZones = {
@@ -78,13 +85,14 @@ type SetZoneError = {
 
 export type MinimalZone = {
 	bio?: string
+	approach?: string
 	zone_name: string
 	adventure_type: AdventureChoiceType
 	id?: number
 	zone_id?: number
-	coordinantes: {
-		latitude: number
-		longitude: number
+	coordinates: {
+		lat: number
+		lng: number
 	}
 }
 
@@ -92,6 +100,7 @@ export type FullZone = MinimalZone & {
 	adventures?: AdventureType[]
 	zones?: MinimalZone[]
 	images?: string[]
+	breadcrumb?: BreadcrumbElement[]
 	creator_id?: number
 	creator_name?: string
 	creator_email?: string

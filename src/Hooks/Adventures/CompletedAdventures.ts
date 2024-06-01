@@ -8,7 +8,7 @@ import type {
 	UserType
 } from '../../Types/User'
 import { fetcher } from '../../utils'
-import { adventures } from '../Apis'
+import { adventuresApi } from '../Apis'
 
 export const useSaveCompletedAdventure = (): {
 	saveCompletedAdventure: ({
@@ -43,8 +43,8 @@ export const useSaveCompletedAdventure = (): {
 				data: {
 					completed: { user_completed_field }
 				}
-			} = await fetcher(adventures.completeAdventure.url, {
-				method: adventures.completeAdventure.method,
+			} = await fetcher(adventuresApi.completeAdventure.url, {
+				method: adventuresApi.completeAdventure.method,
 				body: {
 					adventure_id: adventureId,
 					public: true,

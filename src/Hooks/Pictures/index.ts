@@ -2,7 +2,7 @@ import { useAdventureStateContext } from '../../Providers/AdventureStateProvider
 import { useUserStateContext } from '../../Providers/UserStateProvider'
 import type { URLType } from '../../Types/Cards'
 import { fetcher } from '../../utils'
-import { pictures } from '../Apis'
+import { picturesApi } from '../Apis'
 
 export const usePictures = (): {
 	savePicture: ({
@@ -31,8 +31,8 @@ export const usePictures = (): {
 		try {
 			if (isProfilePicture !== undefined && isProfilePicture) {
 				// handle profile image
-				fetcher(pictures.changeProfilePicture.url, {
-					method: pictures.changeProfilePicture.method,
+				fetcher(picturesApi.changeProfilePicture.url, {
+					method: picturesApi.changeProfilePicture.method,
 					headers: [{ name: 'content-type', value: 'none' }],
 					body: formData
 				}).then(({ data }) => {
@@ -40,8 +40,8 @@ export const usePictures = (): {
 				})
 			} else {
 				// handle user and adventure images
-				fetcher(pictures.upload.url, {
-					method: pictures.upload.method,
+				fetcher(picturesApi.upload.url, {
+					method: picturesApi.upload.method,
 					headers: [{ name: 'content-type', value: 'none' }],
 					body: formData
 				}).then(({ data }) => {
@@ -60,8 +60,8 @@ export const usePictures = (): {
 	const deletePicture = async ({ url }: { url: URLType }): Promise<void> => {
 		try {
 			console.log({ url })
-			await fetcher(pictures.delete.url, {
-				method: pictures.delete.method,
+			await fetcher(picturesApi.delete.url, {
+				method: picturesApi.delete.method,
 				body: { url }
 			})
 

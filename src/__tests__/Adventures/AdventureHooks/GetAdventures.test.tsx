@@ -47,8 +47,8 @@ describe('testing get adventures hooks', () => {
 		localStorage.setItem(
 			'startPos',
 			JSON.stringify({
-				latitude: 100,
-				longitude: 20,
+				lat: 100,
+				lng: 20,
 				zoom: 10
 			})
 		)

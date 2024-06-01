@@ -177,7 +177,11 @@ export const fetcher = async (
 		method: options?.method ?? 'GET'
 	})
 
-	if (response.status === 204) {
+	if (response === undefined) {
+		throw new Error('no response found from request')
+	}
+
+	if (response?.status === 204) {
 		return true
 	}
 

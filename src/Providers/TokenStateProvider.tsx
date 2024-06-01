@@ -1,5 +1,5 @@
 import React, { createContext, type ReactNode, useContext, useEffect, useReducer } from 'react'
-import { tokens } from '../Hooks/Apis'
+import { tokensApi } from '../Hooks/Apis'
 import { type TokenContext } from '../Types/Tokens'
 import { fetcher } from '../utils'
 import { initialTokenState, tokenReducer } from './Reducers/TokenReducer'
@@ -20,7 +20,7 @@ export const TokenStateProvider = ({ children }: { children: ReactNode }): JSX.E
 
 	// get tokens for the app
 	useEffect(() => {
-		fetcher(tokens.getInitialCall.url, { method: tokens.getInitialCall.method })
+		fetcher(tokensApi.getInitialCall.url, { method: tokensApi.getInitialCall.method })
 			.then(({ data }: { data: any }) => {
 				tokenDispatch({
 					type: 'setTokens',

@@ -32,15 +32,29 @@ type AdventureFeature = {
 	}
 }
 
+export type AdventureSearchElement = {
+	adventure_id: number
+	adventure_name: string
+	adventure_type: AdventureChoiceType
+	nearest_city: string
+}
+
 export type AdventureList = {
 	type: 'FeatureCollection'
 	features: AdventureFeature[]
+}
+
+export type BreadcrumbElement = {
+	id: number
+	name: string
+	category_type: 'adventure' | 'zone'
 }
 
 type BasicAdventureType = {
 	adventure_name: string
 	adventure_type: AdventureChoiceType
 	bio?: string
+	breadcrumb?: BreadcrumbElement[]
 	completed_users?: CompletedUserType[]
 	todo_users?: TodoUserType[]
 	coordinates: {
@@ -142,8 +156,8 @@ export type AdventureType =
 	| BikeAdventureType
 
 export type MapPosition = {
-	longitude: number
-	latitude: number
+	lng: number
+	lat: number
 	zoom: number
 }
 
@@ -306,8 +320,8 @@ export type AdventureState = {
 	adventureError: null | string
 	isPathEditOn: boolean
 	startPosition: {
-		latitude: number
-		longitude: number
+		lat: number
+		lng: number
 		zoom: number
 	} | null
 	isDeletePageOpen: boolean

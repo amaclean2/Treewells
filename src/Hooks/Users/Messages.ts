@@ -3,7 +3,7 @@ import { useMessagingStateContext } from '../../Providers/MessageStateProvider'
 import { useUserStateContext } from '../../Providers/UserStateProvider'
 import { type MessageType } from '../../Types/Messages'
 import { fetcher } from '../../utils'
-import { conversations } from '../Apis'
+import { conversationsApi } from '../Apis'
 
 type ResponseType = {
 	conversations?: any
@@ -157,8 +157,8 @@ export const useMessages = (): {
 		try {
 			const {
 				data: { conversation }
-			} = await fetcher(`${conversations.create.url}`, {
-				method: conversations.create.method,
+			} = await fetcher(`${conversationsApi.create.url}`, {
+				method: conversationsApi.create.method,
 				body: {
 					user_ids: [userId]
 				}

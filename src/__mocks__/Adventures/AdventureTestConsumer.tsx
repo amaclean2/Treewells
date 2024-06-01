@@ -42,8 +42,8 @@ const AdventureTestConsumer = (): JSX.Element => {
 		adventureDispatch({
 			type: 'updateStartPosition',
 			payload: {
-				latitude: 10,
-				longitude: 5,
+				lat: 10,
+				lng: 5,
 				zoom: 3
 			}
 		})
@@ -58,8 +58,8 @@ const AdventureTestConsumer = (): JSX.Element => {
 			type: 'setInitialValues',
 			payload: {
 				startPosition: {
-					latitude: 5.3,
-					longitude: 10.2,
+					lat: 5.3,
+					lng: 10.2,
 					zoom: 12
 				},
 				globalAdventureType: 'hike'
