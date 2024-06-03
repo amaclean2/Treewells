@@ -17,11 +17,13 @@ export const useGetAdventures = (): {
 	getNearbyAdventures: ({
 		type,
 		coordinates,
-		count
+		count,
+		zoneId
 	}: {
 		type: AdventureChoiceType
 		coordinates: { lat: number; lng: number }
 		count?: number
+		zoneId?: number
 	}) => Promise<void>
 	changeAdventureType: ({ type }: { type: AdventureChoiceType }) => void
 	enableNewAdventureClick: ({
@@ -85,21 +87,25 @@ export const useGetAdventures = (): {
 	const getNearbyAdventures = async ({
 		type,
 		coordinates,
-		count = 10
+		count = 10,
+		zoneId
 	}: {
 		type: AdventureChoiceType
 		coordinates: { lat: number; lng: number }
 		count?: number
+		zoneId?: number
 	}): Promise<void> => {
 		try {
+			const zoneBlock = zoneId !== undefined ? `&zone_id=${zoneId}` : ''
+			const assembledUrl = `${adventuresApi.getAdventuresByDistance.url}?adventure_type=${
+				type ?? globalAdventureType
+			}&coordinates_lat=${coordinates.lat}&coordinates_lng=${
+				coordinates.lng
+			}&count=${count}${zoneBlock}`
+
 			const {
 				data: { adventures: closeAdventures }
-			} = await fetcher(
-				`${adventuresApi.getAdventuresByDistance.url}?adventure_type=${
-					type ?? globalAdventureType
-				}&coordinates_lat=${coordinates.lat}&coordinates_lng=${coordinates.lng}&count=${count}`,
-				{ method: adventuresApi.getAdventuresByDistance.method }
-			)
+			} = await fetcher(assembledUrl, { method: adventuresApi.getAdventuresByDistance.method })
 
 			adventureDispatch({ type: 'setCloseAdventures', payload: closeAdventures })
 		} catch (error) {}

@@ -4,11 +4,13 @@ import type { EventChoiceTypes } from '../../Users'
 export type GetNearbyZones = ({
 	type,
 	coordinates,
-	count
+	count,
+	parentId
 }: {
 	type: AdventureChoiceType
 	coordinates: { lat: number; lng: number }
 	count: number
+	parentId?: number
 }) => Promise<void>
 
 export type GetZone = ({ id }: { id: number }) => Promise<void>

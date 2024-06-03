@@ -22,19 +22,24 @@ export const useGetZones = (): {
 	const getNearbyZones = async ({
 		type,
 		coordinates,
-		count = 10
+		count = 10,
+		parentId
 	}: {
 		type: AdventureChoiceType
 		coordinates: { lat: number; lng: number }
 		count?: number
+		parentId?: number
 	}): Promise<void> => {
 		try {
+			const parentZoneBlock = parentId !== undefined ? `&parent=${parentId}` : ''
 			const {
 				data: { zones: closeZones }
 			} = await fetcher(
 				`${zonesApi.getZonesByDistance.url}?adventure_type=${
 					type ?? globalAdventureType
-				}&coordinates_lat=${coordinates.lat}&coordinates_lng=${coordinates.lng}&count=${count}`,
+				}&coordinates_lat=${coordinates.lat}&coordinates_lng=${
+					coordinates.lng
+				}&count=${count}${parentZoneBlock}`,
 				{ method: zonesApi.getZonesByDistance.method }
 			)
 
