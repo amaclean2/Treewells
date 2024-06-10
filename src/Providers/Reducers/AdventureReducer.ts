@@ -13,7 +13,8 @@ export const initialAdventureState: AdventureState = {
 	globalAdventureType: null, // The adventure type selected in the app
 	isPathEditOn: false, // a boolean that tells the map when a path is being drawn
 	workingPath: { path: [], elevations: [], maxEl: 0, minEl: 0, points: [] }, // the path being edited
-	matchPath: false // a check to see if the saved path should match any roads
+	matchPath: false, // a check to see if the saved path should match any roads
+	zoneAdd: null // if this variable is present, after creating a new adventure, add that adventure to this zone
 }
 
 export const adventureReducer = (
@@ -83,6 +84,11 @@ export const adventureReducer = (
 					...(state.currentAdventure as AdventureType),
 					[action.payload.name]: action.payload.value
 				}
+			}
+		case 'toggleZoneAdd':
+			return {
+				...state,
+				zoneAdd: action.payload !== undefined ? action.payload : null
 			}
 		/**
 		 * startNewAdventureProcess is triggered when the adventure type is selected

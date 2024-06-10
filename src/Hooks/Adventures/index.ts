@@ -8,7 +8,7 @@ import type {
 	ZoneType
 } from '../../Types/Adventures'
 import { fetcher, useDebounce } from '../../utils'
-import { adventuresApi } from '../Apis'
+import { adventuresApi, zonesApi } from '../Apis'
 import type { EventChoiceTypes } from '../Users'
 
 export const useGetAdventures = (): {
@@ -34,6 +34,7 @@ export const useGetAdventures = (): {
 		isZone: boolean
 	}) => void
 	processCsvAdventures: ({ csvString }: { csvString: string }) => Promise<AdventureType[]>
+	clearCurrentAdventure: () => void
 } => {
 	const { globalAdventureType, adventureDispatch } = useAdventureStateContext()
 	const { updatePath } = useSaveAdventure()
@@ -56,7 +57,8 @@ export const useGetAdventures = (): {
 			})
 
 			adventureDispatch({ type: 'setCurrentAdventure', payload: adventure })
-			if (adventure.path !== undefined) {
+
+			if (adventure.path !== undefined && adventure.path.length !== 0) {
 				const maxEl = Number(
 					Math.max(...adventure.elevations?.map((el: [number, number]) => el[0])).toFixed(0)
 				)
@@ -167,13 +169,18 @@ export const useGetAdventures = (): {
 		}
 	}
 
+	const clearCurrentAdventure = (): void => {
+		adventureDispatch({ type: 'setCurrentAdventure', payload: null })
+	}
+
 	return {
 		getAdventure,
 		getNearbyAdventures,
 		getAllAdventures,
 		changeAdventureType,
 		processCsvAdventures,
-		enableNewAdventureClick
+		enableNewAdventureClick,
+		clearCurrentAdventure
 	}
 }
 
@@ -181,7 +188,7 @@ export const useSaveAdventure = (): {
 	editAdventure: (event: EventChoiceTypes) => Promise<void>
 	editCoordinates: (coordinates: { lat: number; lng: number }) => Promise<void>
 	createNewDefaultAdventure: ({ lat, lng }: { lat: number; lng: number }) => Promise<AdventureType>
-	createNewDefaultZone: ({ lat, lng }: { lat: number; lng: number }) => Promise<ZoneType>
+	toggleZoneAdd: (parentZoneId?: number | null) => void
 	insertBulkAdventures: ({
 		adventuresObject
 	}: {
@@ -191,6 +198,20 @@ export const useSaveAdventure = (): {
 	togglePathEdit: (val?: boolean) => void
 	toggleMatchPath: (val?: boolean) => void
 	savePath: () => Promise<void>
+	removeAdventureFromArea: ({
+		parentId,
+		childId
+	}: {
+		parentId: number
+		childId: number
+	}) => Promise<void>
+	removeAreaFromArea: ({
+		parentId,
+		childId
+	}: {
+		parentId: number
+		childId: number
+	}) => Promise<void>
 	updatePath: ({
 		path,
 		elevations,
@@ -282,6 +303,21 @@ export const useSaveAdventure = (): {
 				}
 			}
 		})
+
+		adventureDispatch({
+			type: 'editAdventure',
+			payload: {
+				name: 'path',
+				value: workingPath.path
+			}
+		})
+		adventureDispatch({
+			type: 'editAdventure',
+			payload: {
+				name: 'points',
+				value: workingPath.points
+			}
+		})
 	}
 
 	const toggleAdventureAddState = (val: false | 'adventure' | 'zone'): void => {
@@ -289,6 +325,12 @@ export const useSaveAdventure = (): {
 			type: 'toggleAdventureAddState',
 			payload: val
 		})
+	}
+
+	const toggleZoneAdd = (parentZoneId?: number | null): void => {
+		if (parentZoneId !== undefined)
+			adventureDispatch({ type: 'toggleZoneAdd', payload: parentZoneId })
+		else adventureDispatch({ type: 'toggleZoneAdd' })
 	}
 
 	const deletePath = async (): Promise<void> => {
@@ -370,44 +412,6 @@ export const useSaveAdventure = (): {
 		}
 	}
 
-	const createNewDefaultZone = async ({
-		lng,
-		lat
-	}: {
-		lng: number
-		lat: number
-	}): Promise<ZoneType> => {
-		const newDefaultZone: ZoneType = {
-			adventure_type: globalAdventureType as AdventureChoiceType,
-			zone_name: 'New Zone',
-			public: true,
-			nearest_city: 'New City',
-			coordinates: {
-				lng,
-				lat
-			}
-		}
-
-		try {
-			const { data } = await fetcher(
-				adventuresApi.create.url,
-				{
-					method: adventuresApi.create.method,
-					body: newDefaultZone
-				},
-				{ zone: { ...newDefaultZone, id: 1000 }, all_zones: [{ ...newDefaultZone, id: 1000 }] }
-			)
-
-			const { zone, all_zones } = data
-			console.log({ zone, all_zones })
-
-			return zone
-		} catch (error) {
-			adventureDispatch({ type: 'setAdventureError', payload: 'could not create a new zone' })
-			return {} as ZoneType
-		}
-	}
-
 	const insertBulkAdventures = async ({
 		adventuresObject
 	}: {
@@ -424,6 +428,50 @@ export const useSaveAdventure = (): {
 		}
 	}
 
+	const removeAdventureFromArea = async ({
+		parentId,
+		childId
+	}: {
+		parentId: number
+		childId: number
+	}): Promise<void> => {
+		try {
+			await fetcher(zonesApi.removeChild.url, {
+				method: zonesApi.removeChild.method,
+				body: {
+					child_type: 'adventure',
+					parent_zone_id: parentId,
+					adventure_id: childId
+				}
+			})
+		} catch (error) {
+			console.log('removing adventure treewells')
+			console.log(error)
+		}
+	}
+
+	const removeAreaFromArea = async ({
+		parentId,
+		childId
+	}: {
+		parentId: number
+		childId: number
+	}): Promise<void> => {
+		try {
+			await fetcher(zonesApi.removeChild.url, {
+				method: zonesApi.removeChild.method,
+				body: {
+					child_type: 'zone',
+					parent_zone_id: parentId,
+					child_zone_id: childId
+				}
+			})
+		} catch (error) {
+			console.log('removing adventure treewells')
+			console.log(error)
+		}
+	}
+
 	const setAdventureError = (adventureError: string): void => {
 		adventureDispatch({ type: 'setAdventureError', payload: adventureError })
 	}
@@ -432,7 +480,6 @@ export const useSaveAdventure = (): {
 		editAdventure,
 		editCoordinates,
 		createNewDefaultAdventure,
-		createNewDefaultZone,
 		insertBulkAdventures,
 		setAdventureError,
 		togglePathEdit,
@@ -440,7 +487,10 @@ export const useSaveAdventure = (): {
 		deletePath,
 		updatePath,
 		toggleAdventureAddState,
-		toggleMatchPath
+		toggleMatchPath,
+		removeAdventureFromArea,
+		removeAreaFromArea,
+		toggleZoneAdd
 	}
 }
 

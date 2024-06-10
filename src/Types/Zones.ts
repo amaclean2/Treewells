@@ -43,7 +43,7 @@ type SetCloseZones = {
 
 type SetCurrentZone = {
 	type: 'setCurrentZone'
-	payload: FullZone
+	payload: FullZone | null
 }
 
 type EditZone = {

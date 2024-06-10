@@ -186,7 +186,7 @@ type MapDoubleClickEnabled = {
 
 type SetCurrentAdventure = {
 	type: 'setCurrentAdventure'
-	payload: AdventureType
+	payload: AdventureType | null
 }
 
 type CloseAdventureView = {
@@ -197,7 +197,7 @@ type EditAdventure = {
 	type: 'editAdventure'
 	payload: {
 		name: string
-		value: string
+		value: string | TrailPath
 	}
 }
 
@@ -288,6 +288,11 @@ type ToggleAdventureAddState = {
 	payload: false | 'zone' | 'adventure'
 }
 
+type ToggleZoneAdd = {
+	type: 'toggleZoneAdd'
+	payload?: number | null
+}
+
 export type AdventureAction =
 	| SetAllAdventuresType
 	| SetNewAdventureView
@@ -311,6 +316,7 @@ export type AdventureAction =
 	| ToggleMatchPath
 	| ClearTrailPath
 	| ToggleAdventureAddState
+	| ToggleZoneAdd
 
 export type AdventureState = {
 	allAdventures: AdventureList | null
@@ -334,6 +340,7 @@ export type AdventureState = {
 		minEl: number
 	}
 	matchPath: boolean
+	zoneAdd: number | null
 }
 
 export type AdventureContext = AdventureState & { adventureDispatch: Dispatch<AdventureAction> }

@@ -1,4 +1,4 @@
-import type { AdventureChoiceType } from '../../../Types/Adventures'
+import type { AdventureChoiceType, ZoneType } from '../../../Types/Adventures'
 import type { EventChoiceTypes } from '../../Users'
 
 export type GetNearbyZones = ({
@@ -18,6 +18,8 @@ export type GetZone = ({ id }: { id: number }) => Promise<void>
 export type EditZone = (event: EventChoiceTypes) => Promise<void>
 
 export type EditCoordiantes = (coordinates: { lat: number; lng: number }) => Promise<void>
+
+export type CreatenewDefaultZone = (coordinates: { lat: number; lng: number }) => Promise<ZoneType>
 
 export type AddAdventureToZone = ({
 	parentId,
