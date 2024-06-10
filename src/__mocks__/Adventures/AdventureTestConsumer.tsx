@@ -11,7 +11,6 @@ const AdventureTestConsumer = (): JSX.Element => {
 		startPosition,
 		globalAdventureType,
 		adventureAddState,
-		adventureEditState,
 		adventureDispatch
 	} = useAdventureStateContext()
 
@@ -43,8 +42,8 @@ const AdventureTestConsumer = (): JSX.Element => {
 		adventureDispatch({
 			type: 'updateStartPosition',
 			payload: {
-				latitude: 10,
-				longitude: 5,
+				lat: 10,
+				lng: 5,
 				zoom: 3
 			}
 		})
@@ -59,8 +58,8 @@ const AdventureTestConsumer = (): JSX.Element => {
 			type: 'setInitialValues',
 			payload: {
 				startPosition: {
-					latitude: 5.3,
-					longitude: 10.2,
+					lat: 5.3,
+					lng: 10.2,
 					zoom: 12
 				},
 				globalAdventureType: 'hike'
@@ -78,7 +77,7 @@ const AdventureTestConsumer = (): JSX.Element => {
 	const startNewAdventure = (): void => {
 		adventureDispatch({
 			type: 'startNewAdventureProcess',
-			payload: 'hike'
+			payload: { type: 'hike', isZone: false }
 		})
 	}
 
@@ -121,19 +120,13 @@ const AdventureTestConsumer = (): JSX.Element => {
 	const enableDoubleClick = (): void => {
 		adventureDispatch({
 			type: 'startNewAdventureProcess',
-			payload: 'ski'
+			payload: { type: 'ski', isZone: false }
 		})
 	}
 
 	const closeAdventureView = (): void => {
 		adventureDispatch({
 			type: 'closeAdventureView'
-		})
-	}
-
-	const editAdventure = (): void => {
-		adventureDispatch({
-			type: 'switchIsAdventureEditable'
 		})
 	}
 
@@ -146,7 +139,6 @@ const AdventureTestConsumer = (): JSX.Element => {
 			<span>Start position view: {startPosition?.zoom}</span>
 			<span>Adventure type view: {globalAdventureType}</span>
 			<span>Adventure add state view: {adventureAddState.toString()}</span>
-			<span>Adventure edit state view: {adventureEditState.toString()}</span>
 
 			<button onClick={getAllAdventures}>Get All Adventures</button>
 			<button onClick={getCurrentAdventure}>Get Current Adventure</button>
@@ -158,7 +150,6 @@ const AdventureTestConsumer = (): JSX.Element => {
 			<button onClick={addNewAdventure}>Add New Adventure</button>
 			<button onClick={enableDoubleClick}>Enable Double Click</button>
 			<button onClick={closeAdventureView}>Close Adventure View</button>
-			<button onClick={editAdventure}>Change Adventure Edit State</button>
 
 			<input
 				data-testid={'adventure-edit'}

@@ -131,7 +131,15 @@ export const gradeConverter = (grade: string, climbType: string): string | undef
 	return showClimbGrades(climbType).find(({ value }) => value === grade.split(':')[0])?.label
 }
 
-export const fetcher = async (url: string, options?: OptionsType): Promise<any> => {
+export const fetcher = async (
+	url: string,
+	options?: OptionsType,
+	useDummyData?: Record<string, unknown>
+): Promise<any> => {
+	if (useDummyData !== undefined) {
+		return { data: useDummyData }
+	}
+
 	const token = (await Storage.getItem('token')) as string
 	const headers = new Headers()
 
@@ -169,7 +177,11 @@ export const fetcher = async (url: string, options?: OptionsType): Promise<any> 
 		method: options?.method ?? 'GET'
 	})
 
-	if (response.status === 204) {
+	if (response === undefined) {
+		throw new Error('no response found from request')
+	}
+
+	if (response?.status === 204) {
 		return true
 	}
 

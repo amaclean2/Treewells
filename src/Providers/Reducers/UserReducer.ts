@@ -98,7 +98,10 @@ export const userReducer = (state: UserState, action: UserAction): UserState => 
 		case 'clearForm':
 			return { ...state, userError: null, formFields: {} }
 		case 'switchIsUserEditable':
-			return { ...state, userEditState: !state.userEditState }
+			return {
+				...state,
+				userEditState: action.payload !== undefined ? action.payload : !state.userEditState
+			}
 		case 'changeStatView':
 			return { ...state, statView: action.payload }
 		default:

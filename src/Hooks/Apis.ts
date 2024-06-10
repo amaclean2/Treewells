@@ -9,8 +9,6 @@ type UserObject = {
 	getLoggedIn: ApiObject
 	getById: ApiObject
 	edit: ApiObject
-	searchForUser: ApiObject
-	searchForFriend: ApiObject
 	followUser: ApiObject
 	sendPasswordResetLink: ApiObject
 	createNewPassword: ApiObject
@@ -26,13 +24,25 @@ type AdventureObject = {
 	getAllAdventures: ApiObject
 	getAdventureDetails: ApiObject
 	getAdventuresByDistance: ApiObject
-	searchForAdventures: ApiObject
 	editAdventure: ApiObject
+	editAdventurePath: ApiObject
 	processAdventureCSV: ApiObject
 	builkImport: ApiObject
 	deleteAdventure: ApiObject
+	deletePath: ApiObject
 	createTodo: ApiObject
 	completeAdventure: ApiObject
+}
+
+type ZoneObject = {
+	create: ApiObject
+	getAllZones: ApiObject
+	getZoneDetails: ApiObject
+	getZonesByDistance: ApiObject
+	editZone: ApiObject
+	addChild: ApiObject
+	removeChild: ApiObject
+	deleteZone: ApiObject
 }
 
 type PicturesObject = {
@@ -45,9 +55,16 @@ type PicturesObject = {
 type ConversationsObject = {
 	create: ApiObject
 	getConversations: ApiObject
+	addUserToConversation: ApiObject
 }
 
-export const users: UserObject = {
+type SearchObject = {
+	searchForUser: ApiObject
+	searchForAdventure: ApiObject
+	searchForZone: ApiObject
+}
+
+export const usersApi: UserObject = {
 	create: {
 		url: '/users',
 		method: 'POST'
@@ -68,14 +85,6 @@ export const users: UserObject = {
 		url: '/users',
 		method: 'PUT'
 	},
-	searchForUser: {
-		url: '/users/search',
-		method: 'GET'
-	},
-	searchForFriend: {
-		url: '/users/friendSearch',
-		method: 'GET'
-	},
 	followUser: {
 		url: '/users/follow',
 		method: 'GET'
@@ -94,14 +103,64 @@ export const users: UserObject = {
 	}
 }
 
-export const tokens: TokenObject = {
+export const tokensApi: TokenObject = {
 	getInitialCall: {
 		url: '/services/initial',
 		method: 'GET'
 	}
 }
 
-export const adventures: AdventureObject = {
+export const zonesApi: ZoneObject = {
+	create: {
+		url: '/zones',
+		method: 'POST'
+	},
+	getAllZones: {
+		url: '/zones/all',
+		method: 'GET'
+	},
+	getZoneDetails: {
+		url: '/zones/details',
+		method: 'GET'
+	},
+	getZonesByDistance: {
+		url: '/zones/distance',
+		method: 'GET'
+	},
+	editZone: {
+		url: '/zones',
+		method: 'PUT'
+	},
+	addChild: {
+		url: '/zones/child',
+		method: 'POST'
+	},
+	removeChild: {
+		url: '/zones/child',
+		method: 'DELETE'
+	},
+	deleteZone: {
+		url: '/zones',
+		method: 'DELETE'
+	}
+}
+
+export const searchApi: SearchObject = {
+	searchForUser: {
+		url: '/search/users',
+		method: 'GET'
+	},
+	searchForAdventure: {
+		url: '/search/adventures',
+		method: 'GET'
+	},
+	searchForZone: {
+		url: '/search/zones',
+		method: 'GET'
+	}
+}
+
+export const adventuresApi: AdventureObject = {
 	create: {
 		url: '/adventures',
 		method: 'POST'
@@ -118,12 +177,12 @@ export const adventures: AdventureObject = {
 		url: '/adventures/distance',
 		method: 'GET'
 	},
-	searchForAdventures: {
-		url: '/adventures/search',
-		method: 'GET'
-	},
 	editAdventure: {
 		url: '/adventures',
+		method: 'PUT'
+	},
+	editAdventurePath: {
+		url: '/adventures/path',
 		method: 'PUT'
 	},
 	processAdventureCSV: {
@@ -138,6 +197,10 @@ export const adventures: AdventureObject = {
 		url: '/adventures',
 		method: 'DELETE'
 	},
+	deletePath: {
+		url: '/adventures/path',
+		method: 'DELETE'
+	},
 	createTodo: {
 		url: '/adventures/todo',
 		method: 'POST'
@@ -148,7 +211,7 @@ export const adventures: AdventureObject = {
 	}
 }
 
-export const pictures: PicturesObject = {
+export const picturesApi: PicturesObject = {
 	upload: {
 		url: '/pictures',
 		method: 'POST'
@@ -167,13 +230,17 @@ export const pictures: PicturesObject = {
 	}
 }
 
-export const conversations: ConversationsObject = {
+export const conversationsApi: ConversationsObject = {
 	getConversations: {
 		url: '/conversations',
 		method: 'GET'
 	},
 	create: {
 		url: '/conversations',
+		method: 'POST'
+	},
+	addUserToConversation: {
+		url: '/conversations/addUser',
 		method: 'POST'
 	}
 }

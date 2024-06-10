@@ -23,6 +23,13 @@ type FriendType = {
 	user_id: number
 }
 
+export type UserSearchElement = {
+	user_id: number
+	display_name: string
+	email: string
+	profile_picture_url: string
+}
+
 export type UserStatType = 'friends' | 'completed'
 
 export type UserType = {
@@ -108,6 +115,7 @@ type ClearFormType = {
 
 type IsUserEditableType = {
 	type: 'switchIsUserEditable'
+	payload?: boolean
 }
 
 type ChangeStatType = {

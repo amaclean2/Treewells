@@ -1,6 +1,6 @@
 import React, { createContext, type ReactNode, useContext, useEffect, useReducer } from 'react'
 import { Connections, Storage } from '../config'
-import { users } from '../Hooks/Apis'
+import { usersApi } from '../Hooks/Apis'
 import { type UserContext } from '../Types/User'
 import { fetcher } from '../utils'
 import { initialUserState, userReducer } from './Reducers/UserReducer'
@@ -25,7 +25,7 @@ export const UserStateProvider = ({ children }: { children: ReactNode }): JSX.El
 			Storage.getItem('token')
 				.then((token) => {
 					if (token !== null) {
-						fetcher(users.getLoggedIn.url, { method: users.getLoggedIn.method })
+						fetcher(usersApi.getLoggedIn.url, { method: usersApi.getLoggedIn.method })
 							.then(({ data }) => {
 								if (data.user !== undefined) {
 									userDispatch({ type: 'setLoggedInUser', payload: data.user })
