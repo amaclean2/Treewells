@@ -44,6 +44,10 @@ export type AdventureList = {
 	features: AdventureFeature[]
 }
 
+type AdventureCategory = Record<AdventureChoiceType, PointsLineDifferentiator>
+
+type PointsLineDifferentiator = Record<'points' | 'lines', AdventureList>
+
 export type BreadcrumbElement = {
 	id: number
 	name: string
@@ -169,13 +173,13 @@ export type ElevationCoordinates = ElevationCoordinate[]
 
 type SetAllAdventuresType = {
 	type: 'setAllAdventures'
-	payload: AdventureList
+	payload: AdventureCategory
 }
 
 type SetNewAdventureView = {
 	type: 'addNewAdventure'
 	payload: {
-		adventures: AdventureList
+		adventures: AdventureCategory
 		currentAdventure: AdventureType
 	}
 }
@@ -319,7 +323,7 @@ export type AdventureAction =
 	| ToggleZoneAdd
 
 export type AdventureState = {
-	allAdventures: AdventureList | null
+	allAdventures: AdventureCategory | null
 	closeAdventures: CloseAdventureObject[] | null
 	adventureAddState: false | 'zone' | 'adventure'
 	currentAdventure: AdventureType | null
