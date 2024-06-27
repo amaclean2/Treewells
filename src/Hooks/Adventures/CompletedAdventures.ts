@@ -1,12 +1,8 @@
 import { useGetAdventures } from '.'
 import { useAdventureStateContext } from '../../Providers/AdventureStateProvider'
 import { useUserStateContext } from '../../Providers/UserStateProvider'
-import type { AdventureChoiceType } from '../../Types/Adventures'
-import type {
-	CompletedAdventureForUserType,
-	TodoAdventureForUserType,
-	UserType
-} from '../../Types/User'
+import type { AdventureChoiceType, ShortAdventure } from '../../Types/Adventures'
+import type { UserType } from '../../Types/User'
 import { fetcher } from '../../utils'
 import { adventuresApi } from '../Apis'
 
@@ -58,12 +54,12 @@ export const useSaveCompletedAdventure = (): {
 				payload: {
 					...(loggedInUser as UserType),
 					completed_adventures: [
-						...(loggedInUser?.completed_adventures as CompletedAdventureForUserType[]),
+						...(loggedInUser?.completed_adventures as ShortAdventure[]),
 						user_completed_field
 					],
 					todo_adventures: loggedInUser?.todo_adventures.filter(
 						(adventure) => adventure.adventure_id !== user_completed_field.adventure_id
-					) as TodoAdventureForUserType[]
+					) as ShortAdventure[]
 				}
 			})
 

@@ -1,31 +1,11 @@
 import type { Dispatch } from 'react'
-import type { AdventureChoiceType } from './Adventures'
+import type { ShortAdventure } from './Adventures'
 import type { URLType } from './Cards'
 
-export type CompletedAdventureForUserType = {
-	adventure_id: number
-	adventure_name: string
-	adventure_type: AdventureChoiceType
-	creator_id: number
-	nearest_city: string
-}
-
-export type TodoAdventureForUserType = {
-	adventure_id: number
-	adventure_name: string
-	adventure_type: AdventureChoiceType
-	nearest_city: string
-}
-
-type FriendType = {
-	display_name: string
-	email: string
-	user_id: number
-}
-
-export type UserSearchElement = {
+export type ShortUser = {
 	user_id: number
 	display_name: string
+	first_name: string
 	email: string
 	profile_picture_url: string
 }
@@ -41,9 +21,9 @@ export type UserType = {
 	id: number
 	phone?: string
 	user_site?: string
-	completed_adventures: CompletedAdventureForUserType[]
-	todo_adventures: TodoAdventureForUserType[]
-	friends: FriendType[]
+	completed_adventures: ShortAdventure[]
+	todo_adventures: ShortAdventure[]
+	friends: ShortUser[]
 	images: URLType[]
 	profile_picture_url: URLType
 }

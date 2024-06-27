@@ -1,5 +1,5 @@
-import type { AdventureSearchElement } from '../../Types/Adventures'
-import type { UserSearchElement } from '../../Types/User'
+import type { ShortAdventure } from '../../Types/Adventures'
+import type { ShortUser } from '../../Types/User'
 import type { ZoneSearchElement } from '../../Types/Zones'
 import { fetcher } from '../../utils'
 import { searchApi } from '../Apis'
@@ -12,7 +12,7 @@ type SearchUserDef = ({
 	userId: number
 	searchText: string
 	amongFriends: boolean
-}) => Promise<UserSearchElement[]>
+}) => Promise<ShortUser[]>
 
 type SearchAdventureDef = ({
 	parentZoneId,
@@ -20,7 +20,7 @@ type SearchAdventureDef = ({
 }: {
 	parentZoneId: number
 	searchText: string
-}) => Promise<AdventureSearchElement[]>
+}) => Promise<ShortAdventure[]>
 
 type SearchZoneDef = ({
 	parentZoneId,
@@ -43,7 +43,7 @@ export const useSearch = (): {
 		userId: number
 		searchText: string
 		amongFriends: boolean
-	}): Promise<UserSearchElement[]> => {
+	}): Promise<ShortUser[]> => {
 		try {
 			const {
 				data: { searchResults }
@@ -59,7 +59,7 @@ export const useSearch = (): {
 			return searchResults
 		} catch (error) {
 			console.log(error)
-			return [] as UserSearchElement[]
+			return [] as ShortUser[]
 		}
 	}
 
@@ -69,7 +69,7 @@ export const useSearch = (): {
 	}: {
 		parentZoneId: number
 		searchText: string
-	}): Promise<AdventureSearchElement[]> => {
+	}): Promise<ShortAdventure[]> => {
 		try {
 			const parentZoneBlock = parentZoneId !== undefined ? `&id=${parentZoneId}` : ''
 			const {
@@ -79,7 +79,7 @@ export const useSearch = (): {
 			return searchResults
 		} catch (error) {
 			console.log(error)
-			return [] as AdventureSearchElement[]
+			return [] as ShortAdventure[]
 		}
 	}
 

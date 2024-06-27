@@ -1,11 +1,29 @@
 import type { Dispatch } from 'react'
-import type { AdventureChoiceType, AdventureType, BreadcrumbElement } from './Adventures'
+import type {
+	AdventureChoiceType,
+	AdventureType,
+	BreadcrumbElement,
+	ShortAdventure
+} from './Adventures'
+import type { ShortUser } from './User'
+import { URLType } from './Cards'
 
 export type ZoneState = {
 	allZones: ZoneGeoJSONObj | null
-	closeZones: MinimalZone[] | null
+	closeZones: ShortZone[] | null
 	currentZone: FullZone | null
 	zoneError: string | null
+}
+
+export type ShortZone = {
+	zone_id: number
+	zone_name: string
+	adventure_type: AdventureType
+	nearest_city: string
+	coordinates: {
+		lat: number
+		lng: number
+	}
 }
 
 type ZoneGeoJSONGeometry = {
@@ -38,7 +56,7 @@ type SetAllZones = {
 
 type SetCloseZones = {
 	type: 'setCloseZones'
-	payload: MinimalZone[]
+	payload: ShortZone[]
 }
 
 type SetCurrentZone = {
@@ -57,25 +75,25 @@ type EditZone = {
 type AddAdventure = {
 	type: 'addAdventure'
 	payload: {
-		adventure: AdventureType
+		adventure: ShortAdventure
 	}
 }
 
 type AddSubzone = {
 	type: 'addSubzone'
 	payload: {
-		zone: MinimalZone
+		zone: ShortZone
 	}
 }
 
 type RemoveAdventure = {
 	type: 'removeAdventure'
-	payload: AdventureType[]
+	payload: ShortAdventure[]
 }
 
 type RemoveSubzone = {
 	type: 'removeSubzone'
-	payload: MinimalZone[]
+	payload: ShortZone[]
 }
 
 type SetZoneError = {
@@ -83,27 +101,35 @@ type SetZoneError = {
 	payload: string
 }
 
-export type MinimalZone = {
-	bio?: string
-	approach?: string
+export type FullZone = {
+	id: number
 	zone_name: string
 	adventure_type: AdventureChoiceType
-	id?: number
-	zone_id?: number
+	bio: string
+	appraoch: string
+	nearest_city: string
+	date_created: number
+	creator: ShortUser
 	coordinates: {
 		lat: number
 		lng: number
 	}
+	public: boolean
+	adventures: ShortAdventure[]
+	zones: ShortZone[]
+	breadcrumb: BreadcrumbElement[]
+	images: URLType[]
 }
 
-export type FullZone = MinimalZone & {
-	adventures?: AdventureType[]
-	zones?: MinimalZone[]
-	images?: string[]
-	breadcrumb?: BreadcrumbElement[]
-	creator_id?: number
-	creator_name?: string
-	creator_email?: string
+export type DefaultZone = {
+	zone_name: string
+	adventure_type: AdventureChoiceType
+	public: boolean
+	nearest_city: string
+	coordinates: {
+		lat: number
+		lng: number
+	}
 }
 
 export type ZoneAction =

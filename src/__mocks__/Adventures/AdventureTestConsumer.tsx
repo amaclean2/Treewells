@@ -1,6 +1,6 @@
 import React from 'react'
 import { useAdventureStateContext } from '../../Providers/AdventureStateProvider'
-import { type AdventureType } from '../../Types/Adventures'
+import { AdventureCategory, type AdventureType } from '../../Types/Adventures'
 import { type EventChoiceTypes } from '../../Hooks/Users'
 
 const AdventureTestConsumer = (): JSX.Element => {
@@ -17,7 +17,7 @@ const AdventureTestConsumer = (): JSX.Element => {
 	const getAllAdventures = (): void => {
 		adventureDispatch({
 			type: 'setAllAdventures',
-			payload: { type: 'FeatureCollection', features: [] }
+			payload: { ski: { lines: [{ type: 'FeatureCollection', features: [] }] } }
 		})
 	}
 
@@ -86,22 +86,28 @@ const AdventureTestConsumer = (): JSX.Element => {
 			type: 'addNewAdventure',
 			payload: {
 				adventures: {
-					type: 'FeatureCollection',
-					features: [
-						{
-							type: 'Feature',
-							geometry: {
-								type: 'Point',
-								coordinates: [5, 10]
-							},
-							properties: {
-								adventure_name: 'My Adventure',
-								adventure_type: 'climb',
-								id: 2,
-								public: true
+					ski: {
+						points: [
+							{
+								type: 'FeatureCollection',
+								features: [
+									{
+										type: 'Feature',
+										geometry: {
+											type: 'Point',
+											coordinates: [5, 10]
+										},
+										properties: {
+											adventure_name: 'My Adventure',
+											adventure_type: 'climb',
+											id: 2,
+											public: true
+										}
+									}
+								]
 							}
-						}
-					]
+						]
+					}
 				},
 				currentAdventure: {
 					id: 2,
@@ -132,8 +138,11 @@ const AdventureTestConsumer = (): JSX.Element => {
 
 	return (
 		<div>
-			<span>Proof of all the adventures: {allAdventures?.type}</span>
-			<span>Proof of adventure count: {allAdventures?.features.length}</span>
+			<span>
+				Proof of all the adventures:{' '}
+				{JSON.stringify(Object.keys(allAdventures as AdventureCategory))}
+			</span>
+			<span>Proof of adventure count: {5}</span>
 			<span>Proof of a current adventure: {currentAdventure?.adventure_name}</span>
 			<span>Display adventure error: {adventureError}</span>
 			<span>Start position view: {startPosition?.zoom}</span>

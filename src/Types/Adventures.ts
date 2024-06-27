@@ -1,21 +1,34 @@
 import type { Dispatch } from 'react'
 import type { URLType } from './Cards'
+import type { ShortUser } from './User'
 
 export type AdventureChoiceType = 'ski' | 'climb' | 'hike' | 'bike' | 'skiApproach'
 
-type CompletedUserType = {
+export type ShortAdventure = {
 	adventure_id: number
-	email: string
-	display_name: string
-	profile_picture_url: string | null
-	user_id: number
+	adventure_name: string
+	adventure_type: AdventureChoiceType
+	difficulty: string
+	rating: string
+	nearest_city: string
+	coordinates: {
+		lat: number
+		lng: number
+	}
+	path?: TrailPath
 }
 
-type TodoUserType = {
-	display_name: string
-	email: string
-	profile_picture_url: string | null
-	user_id: number
+export type DefaultAdventure = {
+	adventure_name: string
+	adventure_type: AdventureChoiceType
+	nearest_city: string
+	coordinates: {
+		lat: number
+		lng: number
+	}
+	difficulty?: string
+	rating?: string
+	public: boolean
 }
 
 type AdventureFeature = {
@@ -32,21 +45,23 @@ type AdventureFeature = {
 	}
 }
 
-export type AdventureSearchElement = {
-	adventure_id: number
-	adventure_name: string
-	adventure_type: AdventureChoiceType
-	nearest_city: string
-}
-
-export type AdventureList = {
+type AdventureList = {
 	type: 'FeatureCollection'
 	features: AdventureFeature[]
 }
 
-type AdventureCategory = Record<AdventureChoiceType, PointsLineDifferentiator>
+export type AdventureCategory = {
+	ski?: PointsLineDifferentiator
+	climb?: PointsLineDifferentiator
+	hike?: PointsLineDifferentiator
+	bike?: PointsLineDifferentiator
+	skiApproach?: PointsLineDifferentiator
+}
 
-type PointsLineDifferentiator = Record<'points' | 'lines', AdventureList>
+type PointsLineDifferentiator = {
+	points?: AdventureList[]
+	lines?: AdventureList[]
+}
 
 export type BreadcrumbElement = {
 	id: number
@@ -59,40 +74,20 @@ type BasicAdventureType = {
 	adventure_type: AdventureChoiceType
 	bio?: string
 	breadcrumb?: BreadcrumbElement[]
-	completed_users?: CompletedUserType[]
-	todo_users?: TodoUserType[]
+	completed_users?: ShortUser[]
+	todo_users?: ShortUser[]
 	coordinates: {
 		lat: number
 		lng: number
 	}
-	creator_email?: string
-	creator_id?: number
-	creator_name?: string
-	date_created?: string
+	creator: ShortUser
+	date_created: number
 	id?: number
-	images?: string[]
+	images?: URLType[]
 	nearest_city: string
 	public: boolean
 	difficulty?: string
 	rating?: string
-}
-
-export type ZoneType = {
-	adventure_type: AdventureChoiceType
-	zone_name: string
-	bio?: string
-	creator_email?: string
-	creator_id?: number
-	creator_name?: string
-	date_created?: string
-	id?: number
-	images?: string[]
-	nearest_city: string
-	public: boolean
-	coordinates: {
-		lat: number
-		lng: number
-	}
 }
 
 type PathAdventureType = {
@@ -142,15 +137,6 @@ type BikeAdventureType = BasicAdventureType &
 		climb?: number
 		descent?: number
 	}
-
-type CloseAdventureObject = {
-	id: number
-	adventure_name: string
-	difficulty: string
-	rating: string
-	nearest_city: string
-	bio: string
-}
 
 export type AdventureType =
 	| SkiAdventureType
@@ -270,12 +256,12 @@ type UpdateTrailPath = {
 
 type SetCloseAdventures = {
 	type: 'setCloseAdventures'
-	payload: CloseAdventureObject[]
+	payload: ShortAdventure[]
 }
 
 type SetAdventuresList = {
 	type: 'setAdventuresList'
-	payload: CloseAdventureObject[]
+	payload: ShortAdventure[]
 }
 
 type ToggleMatchPath = {
@@ -324,7 +310,7 @@ export type AdventureAction =
 
 export type AdventureState = {
 	allAdventures: AdventureCategory | null
-	closeAdventures: CloseAdventureObject[] | null
+	closeAdventures: ShortAdventure[] | null
 	adventureAddState: false | 'zone' | 'adventure'
 	currentAdventure: AdventureType | null
 	adventureError: null | string

@@ -3,9 +3,9 @@ import { useCardStateContext } from '../../Providers/CardStateProvider'
 import type {
 	AdventureChoiceType,
 	AdventureType,
+	DefaultAdventure,
 	ElevationCoordinates,
-	TrailPath,
-	ZoneType
+	TrailPath
 } from '../../Types/Adventures'
 import { fetcher, useDebounce } from '../../utils'
 import { adventuresApi, zonesApi } from '../Apis'
@@ -99,11 +99,9 @@ export const useGetAdventures = (): {
 	}): Promise<void> => {
 		try {
 			const zoneBlock = zoneId !== undefined ? `&zone_id=${zoneId}` : ''
-			const assembledUrl = `${adventuresApi.getAdventuresByDistance.url}?adventure_type=${
+			const assembledUrl = `${adventuresApi.getAdventuresByDistance.url}?type=${
 				type ?? globalAdventureType
-			}&coordinates_lat=${coordinates.lat}&coordinates_lng=${
-				coordinates.lng
-			}&count=${count}${zoneBlock}`
+			}&lat=${coordinates.lat}&lng=${coordinates.lng}&count=${count}${zoneBlock}`
 
 			const {
 				data: { adventures: closeAdventures }
@@ -378,7 +376,7 @@ export const useSaveAdventure = (): {
 		lng: number
 		lat: number
 	}): Promise<AdventureType> => {
-		const newDefaultAdventure: AdventureType = {
+		const newDefaultAdventure: DefaultAdventure = {
 			adventure_name: 'New Adventure',
 			adventure_type: globalAdventureType as AdventureChoiceType,
 			public: true,

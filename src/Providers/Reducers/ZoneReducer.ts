@@ -1,5 +1,5 @@
-import type { AdventureType } from '../../Types/Adventures'
-import type { FullZone, MinimalZone, ZoneAction, ZoneState } from '../../Types/Zones'
+import type { AdventureType, ShortAdventure } from '../../Types/Adventures'
+import type { FullZone, ShortZone, ZoneAction, ZoneState } from '../../Types/Zones'
 
 export const initialZoneState = {
 	allZones: null,
@@ -32,7 +32,7 @@ export const zoneReducer = (state: ZoneState, action: ZoneAction): ZoneState => 
 				currentZone: {
 					...(state.currentZone as FullZone),
 					adventures: [
-						...(state.currentZone?.adventures as AdventureType[]),
+						...(state.currentZone?.adventures as ShortAdventure[]),
 						action.payload.adventure
 					]
 				}
@@ -42,7 +42,7 @@ export const zoneReducer = (state: ZoneState, action: ZoneAction): ZoneState => 
 				...state,
 				currentZone: {
 					...(state.currentZone as FullZone),
-					zones: [...(state.currentZone?.zones as MinimalZone[]), action.payload.zone]
+					zones: [...(state.currentZone?.zones as ShortZone[]), action.payload.zone]
 				}
 			}
 		case 'removeAdventure':

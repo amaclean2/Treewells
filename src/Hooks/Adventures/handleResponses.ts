@@ -1,23 +1,13 @@
 import { useGetAdventures } from '.'
 import { useAdventureStateContext } from '../../Providers/AdventureStateProvider'
 import { useUserStateContext } from '../../Providers/UserStateProvider'
-import type { AdventureChoiceType, AdventureType } from '../../Types/Adventures'
-import type { TodoAdventureForUserType, UserType } from '../../Types/User'
+import type { AdventureType, ShortAdventure } from '../../Types/Adventures'
+import type { ShortUser, UserType } from '../../Types/User'
 
 type HandleSaveTodoProps = {
 	todo: {
-		adventure_todo_field: {
-			display_name: string
-			email: string
-			profile_picture_url: string | null
-			user_id: number
-		}
-		user_todo_field: {
-			adventure_name: string
-			adventure_type: AdventureChoiceType
-			adventure_id: number
-			nearest_city: string
-		}
+		adventure_todo_field: ShortUser
+		user_todo_field: ShortAdventure
 	}
 }
 
@@ -34,7 +24,7 @@ export const useHandleAdventureResponses = (): {
 			payload: {
 				...(loggedInUser as UserType),
 				todo_adventures: [
-					...(loggedInUser?.todo_adventures as TodoAdventureForUserType[]),
+					...(loggedInUser?.todo_adventures as ShortAdventure[]),
 					todo.user_todo_field
 				]
 			}

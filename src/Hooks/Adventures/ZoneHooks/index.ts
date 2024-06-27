@@ -1,6 +1,7 @@
 import { useAdventureStateContext } from '../../../Providers/AdventureStateProvider'
 import { useZoneStateContext } from '../../../Providers/ZoneStateProvider'
-import type { AdventureChoiceType, ZoneType } from '../../../Types/Adventures'
+import type { AdventureChoiceType } from '../../../Types/Adventures'
+import type { DefaultZone, FullZone } from '../../../Types/Zones'
 import { fetcher, useDebounce } from '../../../utils'
 import { zonesApi } from '../../Apis'
 import type { EventChoiceTypes } from '../../Users'
@@ -37,11 +38,9 @@ export const useGetZones = (): {
 			const {
 				data: { zones: closeZones }
 			} = await fetcher(
-				`${zonesApi.getZonesByDistance.url}?adventure_type=${
-					type ?? globalAdventureType
-				}&coordinates_lat=${coordinates.lat}&coordinates_lng=${
-					coordinates.lng
-				}&count=${count}${parentZoneBlock}`,
+				`${zonesApi.getZonesByDistance.url}?type=${type ?? globalAdventureType}&lat=${
+					coordinates.lat
+				}&lng=${coordinates.lng}&count=${count}${parentZoneBlock}`,
 				{ method: zonesApi.getZonesByDistance.method }
 			)
 
@@ -203,8 +202,8 @@ export const useSaveZones = (): {
 	const createNewDefaultZone = async (coordinates: {
 		lng: number
 		lat: number
-	}): Promise<ZoneType> => {
-		const newDefaultZone: ZoneType = {
+	}): Promise<FullZone> => {
+		const newDefaultZone: DefaultZone = {
 			adventure_type: globalAdventureType as AdventureChoiceType,
 			zone_name: 'New Zone',
 			public: true,
@@ -226,7 +225,7 @@ export const useSaveZones = (): {
 			return zone
 		} catch (error) {
 			zoneDispatch({ type: 'setZoneError', payload: 'could not create a new zone' })
-			return {} as ZoneType
+			return {} as FullZone
 		}
 	}
 

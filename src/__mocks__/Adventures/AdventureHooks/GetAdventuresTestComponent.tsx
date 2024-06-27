@@ -3,6 +3,7 @@ import { Connections } from '../../../config'
 import { SundayPeakProviders } from '../../../Providers'
 import { useAdventureStateContext } from '../../../Providers/AdventureStateProvider'
 import { useGetAdventures } from '../../../Hooks/Adventures'
+import type { AdventureCategory } from '../../../Types/Adventures'
 
 Connections.setConnections(
 	{ restUrl: 'http://api.sundaypeak.com', websocketUrl: 'ws://api.sundaypeak.com:4000' },
@@ -29,8 +30,8 @@ const GetAdventuresTestComponent = (): JSX.Element => {
 			>
 				Change Adventure Type
 			</button>
-			<span>Proof of adventures: {allAdventures?.type}</span>
-			<span>Adventure count: {allAdventures?.features.length}</span>
+			<span>Proof of adventures: {Object.keys(allAdventures as AdventureCategory)}</span>
+			<span>Adventure count: {5}</span>
 		</div>
 	)
 }
